@@ -7,53 +7,61 @@ import (
 	"net/http"
 	"os"
 	"sort"
-	"strconv"
+	"strings"
 
 	"github.com/gocolly/colly"
 )
 
-type Fact struct {
-	ID          int    `json:"id"`
-	Description string `json:"description"`
+type Coupon struct {
+	Name      string `json:"name"`
+	Location  string `json:"location"`
+	Old_Price string `json:"old price"`
+	Discount  string `json:"discount"`
 }
 
 func scraper(w http.ResponseWriter, r *http.Request) {
-	var animal string
-	fmt.Scanln(&animal)
+	var city string
+	fmt.Scanln(&city)
 
-	allFacts := make([]Fact, 0)
+	allCoupons := make([]Coupon, 0)
 
 	collector := colly.NewCollector(
-		colly.AllowedDomains("factretriever.com", "www.factretriever.com"),
+		colly.AllowedDomains("livingsocial.com", "www.livingsocial.com"),
 	)
 
-	collector.OnHTML(".factsList li", func(element *colly.HTMLElement) {
-		factId, err := strconv.Atoi(element.Attr("id"))
-		if err != nil {
-			log.Println("Could not get id")
+	collector.OnHTML("figure", func(element *colly.HTMLElement) {
+
+		var name string
+		var location string
+		var old_price string
+		var discount string
+
+		name = element.ChildText(".grpn-dc-title")
+		location = element.ChildText(".grpn-dc-loci")
+		old_price = element.ChildText(".wh-dc-price-original")
+		discount = element.ChildText(".wh-dc-discount")
+
+		coupon := Coupon{
+			Name:      name,
+			Location:  location,
+			Old_Price: old_price,
+			Discount:  discount,
 		}
+		allCoupons = append(allCoupons, coupon)
 
-		factDesc := element.Text
-
-		fact := Fact{
-			ID:          factId,
-			Description: factDesc,
-		}
-
-		allFacts = append(allFacts, fact)
 	})
 
 	collector.OnRequest(func(request *colly.Request) {
 		fmt.Println("Visiting", request.URL.String())
 	})
 
-	collector.Visit("https://www.factretriever.com/" + animal + "-facts")
+	collector.Visit("https://www.livingsocial.com/local/" + city)
 
-	sort.SliceStable(allFacts, func(i, j int) bool {
-		return allFacts[i].ID < allFacts[j].ID
+	sort.SliceStable(allCoupons, func(i, j int) bool {
+		return strings.TrimRight((allCoupons[i].Discount), "% discount_off") > strings.TrimRight((allCoupons[j].Discount), "% discount_off")
 	})
 
-	file, err := json.MarshalIndent(allFacts, "", " ")
+	file, err := json.MarshalIndent(allCoupons, "", " ")
 	if err != nil {
 		log.Println("Unable to create json file")
 		return
@@ -67,6 +75,6 @@ func main() {
 	http.HandleFunc("/", scraper)
 	// check if port variable has been set
 	if os.Getenv("PORT") == "" {
-		http.ListenAndServe(":9000", nil)
+		http.ListenAndServe(":8000", nil)
 	}
 }
