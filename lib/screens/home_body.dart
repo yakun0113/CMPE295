@@ -12,8 +12,8 @@ class Body extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: getProportionateScreenWidth(20)),
-            HomeHeader(),
+            //SizedBox(height: getProportionateScreenWidth(20)),
+            //HomeHeader(),
             SizedBox(height: getProportionateScreenWidth(30)),
             DiscountBanner(),
             SizedBox(height: getProportionateScreenWidth(30)),
@@ -21,18 +21,41 @@ class Body extends StatelessWidget {
             SizedBox(height: getProportionateScreenWidth(30)),
             SpecialOffers(),
             SizedBox(height: getProportionateScreenWidth(30)),
-            SectionTitle(
-                text: "Popular Product",
-                press: () {}
-            ),
-            Row(
-              children: [
-                Productcard(),
-              ],
-            ),
+            PopularProducts(),
+            SizedBox(height: getProportionateScreenWidth(30)),
           ],
         ),
       ),
+    );
+  }
+}
+
+class PopularProducts extends StatelessWidget {
+  const PopularProducts({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SectionTitle(
+            text: "Popular Product",
+            press: () {}
+        ),
+        SizedBox(height: getProportionateScreenWidth(20)),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              ...List.generate(
+                demoProducts.length, (index) => Productcard(product: demoProducts[index],),
+              ),
+              SizedBox(width: getProportionateScreenWidth(20)),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -50,51 +73,61 @@ class Productcard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: getProportionateScreenWidth(width),
-      child: Column(
-        children: [
-          AspectRatio(
-            aspectRatio: aspectRetion,
-            child: Container(
-              padding: EdgeInsets.all(getProportionateScreenWidth(20)),
-              decoration: BoxDecoration(
-                color: kSecondaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Image.asset(demoProducts[0].images[0]),
-            ),
-          ),
-          const SizedBox(height: 5),
-          Text(
-            demoProducts[0].title,
-            style: TextStyle(color: Colors.black),
-            maxLines: 2,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "\$${demoProducts[0].price}",
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: getProportionateScreenWidth(18),
-                  color: kPrimaryColor,
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(getProportionateScreenWidth(8)),
-                width: getProportionateScreenWidth(28),
-                height: getProportionateScreenWidth(28),
+    return Padding(
+      padding: EdgeInsets.only(left: getProportionateScreenWidth(20)),
+      child: SizedBox(
+        width: getProportionateScreenWidth(width),
+        child: Column(
+          children: [
+            AspectRatio(
+              aspectRatio: aspectRetion,
+              child: Container(
+                padding: EdgeInsets.all(getProportionateScreenWidth(20)),
                 decoration: BoxDecoration(
                   color: kSecondaryColor.withOpacity(0.1),
-                  shape: BoxShape.circle,
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                child: SvgPicture.asset("assets/icons/Heart Icon_2.svg"),
-              )
-            ],
-          )
-        ],
+                child: Image.asset(product.images[0]),
+              ),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              product.title,
+              style: TextStyle(color: Colors.black),
+              maxLines: 2,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "\$${product.price}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: getProportionateScreenWidth(18),
+                    color: kPrimaryColor,
+                  ),
+                ),
+                InkWell(
+                  borderRadius: BorderRadius.circular(30),
+                  onTap: () {},
+                  child: Container(
+                    padding: EdgeInsets.all(getProportionateScreenWidth(8)),
+                    width: getProportionateScreenWidth(28),
+                    height: getProportionateScreenWidth(28),
+                    decoration: BoxDecoration(
+                      color: product.isFavourite ? kPrimaryColor.withOpacity(0.15) : kSecondaryColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: SvgPicture.asset(
+                      "assets/icons/Heart Icon_2.svg",
+                      color: product.isFavourite ? Color(0xFFFF4848) : Color(0xFFDBDEE4),
+                    ),
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -330,13 +363,13 @@ class DiscountBanner extends StatelessWidget {
       width: double.infinity,
       //height: 90,
       decoration: BoxDecoration(
-        color: Color(0xFF4A3298),
+        color: Color(0xFF8BC34A),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text.rich(
         TextSpan(
           text: "A Summer Surprise\n",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Color(0xFFECEFF1)),
           children: [
             TextSpan(
               text: "Cashback 20%",
@@ -395,19 +428,20 @@ class SearchField extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
       ),
       child: TextField(
-        onChanged: (value) {
-          // search value
-        },
         decoration: InputDecoration(
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
           hintText: "Search Product",
-          prefixIcon: Icon(Icons.search),
+          prefixIcon: Icon(
+            Icons.search,
+          ),
           contentPadding: EdgeInsets.symmetric(
             horizontal: getProportionateScreenWidth(20),
             vertical: getProportionateScreenWidth(9),
           ),
         ),
+        onChanged: (value) {
+        },
       ),
     );
   }
