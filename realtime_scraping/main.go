@@ -19,9 +19,9 @@ type Coupon struct {
 	Discount  string `json:"discount"`
 }
 
+var city string = "san-jose"
+
 func scraper(w http.ResponseWriter, r *http.Request) {
-	var city string
-	fmt.Scanln(&city)
 
 	allCoupons := make([]Coupon, 0)
 
@@ -72,7 +72,7 @@ func scraper(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", scraper)
+	http.HandleFunc("/"+city, scraper)
 	// check if port variable has been set
 	if os.Getenv("PORT") == "" {
 		http.ListenAndServe(":8000", nil)
