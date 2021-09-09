@@ -176,7 +176,7 @@ if __name__ == '__main__':
     product_list = {"Walmart":{"location":"", "products":[]}, "Target":{"location":"", "products":[]}, "Walgreens":{"location":"", "products":[]}}
 
     option = webdriver.ChromeOptions()
-    option.add_argument("--window-size=1920,1080")
+    option.add_argument("--headless")
     
     t1 = Thread(target=get_walmart, args=(product_name, option, latitude, longitude))
     t2 = Thread(target=get_target, args=(product_name, option, latitude, longitude))
