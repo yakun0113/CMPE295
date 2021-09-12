@@ -171,7 +171,7 @@ if __name__ == '__main__':
     latitude = info[1]
     longitude = info[2]
 
-    serpApi_key = "5c7e9eb2cdd847fc042006bf5ef4734994c8ce655aa67c0c27122d8c37d2368e"
+    serpApi_key = "9772af35a91fc905851c21a281375c414974e6c78f1a8ffe6ae1670bf3148eb5"
 
     product_list = {"Walmart":{"location":"", "products":[]}, "Target":{"location":"", "products":[]}, "Walgreens":{"location":"", "products":[]}}
 
