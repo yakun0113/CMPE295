@@ -20,10 +20,9 @@ def get_walmart(product_name, option, latitude, longitude):
     driver.get(Walmart_url)
     button = driver.find_element_by_xpath('//*[@id="content"]/div[2]/section[2]/div[2]/div/div/div/div/div/div[2]/form/div/div[3]/button')
     button.click()
-    time.sleep(0.2)
     for i in range(10):
         driver.execute_script("window.scrollBy(0, document.body.scrollHeight/10)")
-
+        time.sleep(0.1)
     walmart_soup = BeautifulSoup(driver.page_source, 'html.parser')
     driver.quit()
     scrape_walmart(walmart_soup)
@@ -48,7 +47,8 @@ def get_target(product_name, option, latitude, longitude):
     driver.get("https://www.target.com/s?searchTerm="+product_name+"&facetedValue=5zkty")
     for i in range(15):
         driver.execute_script("window.scrollBy(0, document.body.scrollHeight/15)")
-  
+        time.sleep(0.1)
+
     target_soup = BeautifulSoup(driver.page_source, 'html.parser')
     driver.quit()
     scrape_target(target_soup)
@@ -69,6 +69,7 @@ def get_walgreens(product_name, option, latitude, longitude):
     button.click()
     for i in range(15):
         driver.execute_script("window.scrollBy(0, document.body.scrollHeight/15)")
+        time.sleep(0.1)
 
     walgreens_soup = BeautifulSoup(driver.page_source, 'html.parser')
     driver.quit()
@@ -124,7 +125,7 @@ def scrape_target(soup):
         product = {
                 "image": productImage,
                 "name": productName,
-                "price": productImage,      
+                "price": productPrice,      
                 "rating": productRating,
                 "link": productLink
                   } 
