@@ -19,10 +19,10 @@ def get_walmart(product_name, option, latitude, longitude):
     driver.get(Walmart_url)
     button = driver.find_element_by_xpath('//*[@id="content"]/div[2]/section[2]/div[2]/div/div/div/div/div/div[2]/form/div/div[3]/button')
     button.click()
-    time.sleep(0.5)
+    #time.sleep(0.5)
     for i in range(10):
         driver.execute_script("window.scrollBy(0, document.body.scrollHeight/10)")
-        #time.sleep(0.1)
+        time.sleep(0.1)
 
     walmart_soup = BeautifulSoup(driver.page_source, 'html.parser')
     driver.quit()
@@ -50,7 +50,7 @@ def get_target(product_name, option, latitude, longitude):
 
     for i in range(15):
         driver.execute_script("window.scrollBy(0, document.body.scrollHeight/15)")
-        #time.sleep(0.1)
+        time.sleep(0.1)
     target_soup = BeautifulSoup(driver.page_source, 'html.parser')
     driver.quit()
     scrape_target(target_soup)
@@ -69,11 +69,11 @@ def get_walgreens(product_name, option, latitude, longitude):
     search.send_keys(product_name)
     button = driver.find_element_by_xpath('//*[@id="storeServiceDiv"]/div[1]/div[1]/div[3]/div/div/button')
     button.click()
-    time.sleep(0.2)
+    #time.sleep(0.2)
 
     for i in range(15):
         driver.execute_script("window.scrollBy(0, document.body.scrollHeight/15)")
-        #time.sleep(0.1)
+        time.sleep(0.1)
 
     walgreens_soup = BeautifulSoup(driver.page_source, 'html.parser')
     driver.quit()
