@@ -4,11 +4,10 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
 from threading import Thread
-from multiprocessing import Process
-
+from multiprocessing import Process, Manager
 
 def get_walmart(product_name, option, latitude, longitude):
-
+    
     Walmart = requests.get("https://serpapi.com/search.json?engine=google_maps&q=walmart&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + serpApi_key)
     Walmart = Walmart.json()
     Walmart_url = Walmart["local_results"][0]["website"]
@@ -20,16 +19,18 @@ def get_walmart(product_name, option, latitude, longitude):
     driver.get(Walmart_url)
     button = driver.find_element_by_xpath('//*[@id="content"]/div[2]/section[2]/div[2]/div/div/div/div/div/div[2]/form/div/div[3]/button')
     button.click()
+    time.sleep(0.5)
     for i in range(10):
         driver.execute_script("window.scrollBy(0, document.body.scrollHeight/10)")
-        time.sleep(0.1)
+        #time.sleep(0.1)
+
     walmart_soup = BeautifulSoup(driver.page_source, 'html.parser')
     driver.quit()
     scrape_walmart(walmart_soup)
 
 def get_target(product_name, option, latitude, longitude):
 
-    Target = requests.get("https://serpapi.com/search.json?engine=google_maps&q=target&ll=%40"+latitude+"%2C"+longitude+"%2C15.1z&type=search&api_key=5c7e9eb2cdd847fc042006bf5ef4734994c8ce655aa67c0c27122d8c37d2368e")
+    Target = requests.get("https://serpapi.com/search.json?engine=google_maps&q=target&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + serpApi_key)
     Target = Target.json()
     url = Target["local_results"][0]["place_id_search"]
     page = requests.get(url+"&api_key="+serpApi_key)
@@ -41,20 +42,21 @@ def get_target(product_name, option, latitude, longitude):
     driver = webdriver.Chrome(executable_path="/Users/brian80433/Desktop/pythonScraping/chromedriver", options = option)
     driver.get(Target_url)
     driver.execute_script("window.scrollBy(0, document.body.scrollHeight/5)")
-    time.sleep(0.5)
+    time.sleep(0.2)
     button = driver.find_element_by_xpath("//*[@id='__next']/div[3]/div/div[1]/div[2]/div/div[5]/button[2]")
     button.click()
     driver.get("https://www.target.com/s?searchTerm="+product_name+"&facetedValue=5zkty")
+    time.sleep(0.2)
+
     for i in range(15):
         driver.execute_script("window.scrollBy(0, document.body.scrollHeight/15)")
-        time.sleep(0.1)
-
+        #time.sleep(0.1)
     target_soup = BeautifulSoup(driver.page_source, 'html.parser')
     driver.quit()
     scrape_target(target_soup)
 
 def get_walgreens(product_name, option, latitude, longitude):
-
+  
     Walgreens = requests.get("https://serpapi.com/search.json?engine=google_maps&q=walgreens&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + serpApi_key)
     Walgreens = Walgreens.json()
     Walgreens_url = Walgreens["local_results"][0]["website"]
@@ -67,9 +69,11 @@ def get_walgreens(product_name, option, latitude, longitude):
     search.send_keys(product_name)
     button = driver.find_element_by_xpath('//*[@id="storeServiceDiv"]/div[1]/div[1]/div[3]/div/div/button')
     button.click()
+    time.sleep(0.2)
+
     for i in range(15):
         driver.execute_script("window.scrollBy(0, document.body.scrollHeight/15)")
-        time.sleep(0.1)
+        #time.sleep(0.1)
 
     walgreens_soup = BeautifulSoup(driver.page_source, 'html.parser')
     driver.quit()
@@ -118,6 +122,7 @@ def scrape_target(soup):
         productImage = result.select_one('img')["src"]    
         productNameLink = result.select_one('a[class="Link__StyledLink-sc-4b9qcv-0 styles__StyledTitleLink-h3r0um-1 iBIqkb rwewC h-display-block h-text-bold h-text-bs"]')
         productName = productNameLink.text
+        productName.encode('utf-8')
         productPrice = result.select_one('div[data-test="current-price"]').span.text
         productRating = result.select_one('span[class="utils__ScreenReaderOnly-sc-1p6kq06-0 iyDnVM"]').text
         productLink = "https://www.target.com"+productNameLink["href"]
@@ -138,6 +143,7 @@ def scrape_walgreens(soup):
         productImage = result.select_one('figure[class="product__img"] img')["src"]
         productImage = "https:" + productImage
         productName = result.select_one('div[name="product-title"]').text
+        productName.encode('utf-8')
         productPrice = result.select_one('div[class="product__price-contain"] span span span').text
         productRating = result.select_one('span[class="product__rating"] figure img')
         productStatus = result.select_one('div[class="avail-cta"] strong')
@@ -163,7 +169,7 @@ def scrape_walgreens(soup):
             continue
 
 if __name__ == '__main__':
-
+          
     with open('product_name.txt') as f:
         info = f.read()
 
@@ -171,25 +177,28 @@ if __name__ == '__main__':
     product_name = info[0]
     latitude = info[1]
     longitude = info[2]
-
-    serpApi_key = "9772af35a91fc905851c21a281375c414974e6c78f1a8ffe6ae1670bf3148eb5"
-
+        
     product_list = {"Walmart":{"location":"", "products":[]}, "Target":{"location":"", "products":[]}, "Walgreens":{"location":"", "products":[]}}
-
+    serpApi_key = "9772af35a91fc905851c21a281375c414974e6c78f1a8ffe6ae1670bf3148eb5"
     option = webdriver.ChromeOptions()
     option.add_argument("--headless")
-    
-    t1 = Thread(target=get_walmart, args=(product_name, option, latitude, longitude))
-    t2 = Thread(target=get_target, args=(product_name, option, latitude, longitude))
-    t3 = Thread(target=get_walgreens, args=(product_name, option, latitude, longitude))
+
+    args = (product_name, option, latitude, longitude)
+
+    t1 = Thread(target=get_walmart, args= args)
+    t2 = Thread(target=get_target, args= args)
+    t3 = Thread(target=get_walgreens, args= args)
    
     t1.start()
     t2.start()
     t3.start()
-
+    
     t1.join()
     t2.join()
     t3.join()
-
+    
     with open('products.json', 'w') as outfile:
         json.dump(product_list, outfile, indent=4)
+    
+
+ 
