@@ -10,7 +10,7 @@ import (
 
 func scrape_product_with_python() {
 
-	cmd := exec.Command("/usr/local/bin/python", "/Users/brian80433/Desktop/pythonScraping/scraper.py")
+	cmd := exec.Command("/usr/local/bin/python", "scraper.py")
 	output, err := cmd.Output()
 
 	if err != nil {
