@@ -91,14 +91,52 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello!")
 }
 
+type searchPost struct {
+	itemName  string // field
+	latitude  string // field
+	longitude string // field
+}
+
+func searchHandler(w http.ResponseWriter, r *http.Request) {
+	var sp searchPost
+	fmt.Fprintf(w, "POST request successful\n")
+	item := sp.itemName
+	latitude := sp.latitude
+	longitude := sp.longitude
+
+	fmt.Fprintf(w, "Item = %s\n", item)
+	fmt.Fprintf(w, "Latitude = %s\n", latitude)
+	fmt.Fprintf(w, "Longitude = %s\n", longitude)
+
+	info := item + "," + latitude + "," + longitude
+	pass_product_name_and_location(info)
+	scrape_product_with_python()
+	// Open our jsonFile
+	data, err := os.Open("products.json")
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Successfully Opened products.json")
+	// defer the closing of our jsonFile so that we can parse it later on
+	defer data.Close()
+	jdata, err := ioutil.ReadAll(data)
+
+	w.Write(jdata)
+
+}
 func main() {
-	fileServer := http.FileServer(http.Dir("./static"))
-	http.Handle("/", fileServer)
-	http.HandleFunc("/form", formHandler)
-	http.HandleFunc("/hello", helloHandler)
+	fs := http.FileServer(http.Dir("../frontend/dist"))
+	http.Handle("/", fs)
+	//http.HandleFunc("/search", searchHandler)
+	// fileServer := http.FileServer(http.Dir("./static"))
+	// http.Handle("/", fileServer)
+	// http.HandleFunc("/form", formHandler)
+	// http.HandleFunc("/hello", helloHandler)
 
 	fmt.Printf("Starting server at port 8080\n")
 	if err := http.ListenAndServeTLS(":8080", "localhost.crt", "localhost.key", nil); err != nil {
 		log.Fatal(err)
 	}
+
 }
