@@ -4,7 +4,7 @@
       <img class="image" :src="image" />
       <h5 class="price">Price: {{item.price}}</h5>
       <p class="description">Rating : {{item.rating}}</p>
-      <a href="link">Learn More</a>
+      <a :href="link">Learn More</a>
   </div>
 </template>
 
@@ -14,13 +14,13 @@ export default {
     props: [ 'item' ],
     data(){
         return{
-            image: this.item.image
+            image: this.item.image,
+            link: this.item.link
         }
     },
   computed: {
-      imglink(){
-          return this.item.image
-      }
+      
+      
   },
   methods: {
       goToOrigin(){

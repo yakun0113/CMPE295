@@ -180,7 +180,7 @@ const state = {
             "link": "https://www.target.com/p/organic-100-grassfed-90-10-ground-beef-1lb-good-38-gather-8482/-/A-23974825#lnk=sametab"
         },
     ],
-    wallgreenList: [
+    walgreensList: [
         {
             "id":0,
             "image": "https://pics.drugstore.com/prodimg/624097/450.jpg",
@@ -318,8 +318,8 @@ const getters = {
 	target: (state) => {
 		return state.targetList;
 	},
-    wallgreen: (state) => {
-        return state.wallgreenList;
+    walgreens: (state) => {
+        return state.walgreensList;
     }
 }
 
