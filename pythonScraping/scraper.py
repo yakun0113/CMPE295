@@ -75,6 +75,7 @@ def get_walgreens(product_name, option, latitude, longitude):
 
 def scrape_walmart(soup, Walmart_location):
     p_list = []
+    productId = 0
     productInfo = soup.select('ul[class="results-list grid-view"] div[class="Grid-col u-size-6-12 u-size-4-12-s u-size-3-12-m u-size-3-12-l"]')
     for result in productInfo:
         productImage = result.select_one('img[class="tile-img"]')["src"]    
@@ -92,15 +93,15 @@ def scrape_walmart(soup, Walmart_location):
             productRating = "None"
         else:
             productRating = productRating['aria-label']
-
-        productImage = "https://www.walmart.com" + productImage
-        productLink = "https:" + productLink
+        productImage = (productImage.split("//"))[1]
+        productLink = "https://www.walmart.com/" + productLink
 
         if productStatus == None:
             continue
         else:
             productStatus = productStatus.text
             product = {
+                "id": productId,
                 'image': productImage,
                 "name": productName,
                 "price": productPrice,      
@@ -108,6 +109,8 @@ def scrape_walmart(soup, Walmart_location):
                 "link": productLink,
                   } 
             p_list.append(product)    
+            productId += 1
+
     
     store = {
         "store": "Walmart",
@@ -119,18 +122,19 @@ def scrape_walmart(soup, Walmart_location):
     
 def scrape_target(soup, Target_location):
     p_list = []
+    productId = 100
 
     productInfo = soup.select('ul[class="Row-uds8za-0 jBYETz h-padding-t-tight"] li[class="Col-favj32-0 iXmsJV h-padding-a-none h-display-flex"]')
     for result in productInfo:
         productImage = result.select_one('img')["src"]    
         productNameLink = result.select_one('a[class="Link__StyledLink-sc-4b9qcv-0 styles__StyledTitleLink-h3r0um-1 iBIqkb rwewC h-display-block h-text-bold h-text-bs"]')
         productName = productNameLink.text
-        productName.encode('utf-8')
         productPrice = result.select_one('div[data-test="current-price"]').span.text
         productRating = result.select_one('span[class="utils__ScreenReaderOnly-sc-1p6kq06-0 iyDnVM"]').text
         productLink = "https://www.target.com"+productNameLink["href"]
 
         product = {
+                "id": productId,
                 "image": productImage,
                 "name": productName,
                 "price": productPrice,      
@@ -138,7 +142,7 @@ def scrape_target(soup, Target_location):
                 "link": productLink
                   } 
         p_list.append(product)    
-
+        productId += 1
     store = {
         "store": "Target",
         "location": Target_location,
@@ -150,13 +154,13 @@ def scrape_target(soup, Target_location):
 
 def scrape_walgreens(soup, Walgreens_location):
     p_list = []
+    productId = 200
 
     productInfo = soup.select('div[class="item card card__product in-stores"]')
     for result in productInfo:
         productImage = result.select_one('figure[class="product__img"] img')["src"]
         productImage = "https:" + productImage
         productName = result.select_one('div[name="product-title"]').text
-        productName.encode('utf-8')
         productPrice = result.select_one('div[class="product__price-contain"] span span span').text
         productRating = result.select_one('span[class="product__rating"] figure img')
         productStatus = result.select_one('div[class="avail-cta"] strong')
@@ -169,6 +173,7 @@ def scrape_walgreens(soup, Walgreens_location):
 
         if productStatus is not None:
             product = {
+                "id": productId,
                 "image": productImage,
                 "name": productName,
                 "price": productPrice,      
@@ -177,6 +182,7 @@ def scrape_walgreens(soup, Walgreens_location):
                 } 
 
             p_list.append(product)    
+            productId += 1
 
         else: 
             continue
@@ -222,3 +228,4 @@ if __name__ == '__main__':
     
 
  
+
