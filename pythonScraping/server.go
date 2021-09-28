@@ -44,33 +44,16 @@ func pass_product_name_and_location(info string) {
 	}
 
 }
-func homePageHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := fmt.Fprintf(w, "hello world")
-	checkError(err)
-}
-
-func checkError(err error) {
-	if err != nil {
-		log.Panic(err)
-	}
-}
-
-type searchingPost struct {
-	itemName  string
-	latitude  string
-	longitude string
-}
 
 func formHandler(w http.ResponseWriter, r *http.Request) {
-	// if err := r.ParseForm(); err != nil {
-	// 	fmt.Fprintf(w, "ParseForm() err: %v", err)
-	// 	return
-	// }
-	var sp searchingPost
+	if err := r.ParseForm(); err != nil {
+		fmt.Fprintf(w, "ParseForm() err: %v", err)
+		return
+	}
 	fmt.Fprintf(w, "POST request successful\n")
-	item := sp.itemName
-	latitude := sp.latitude
-	longitude := sp.longitude
+	item := r.FormValue("item")
+	latitude := r.FormValue("latitude")
+	longitude := r.FormValue("longitude")
 
 	fmt.Fprintf(w, "Item = %s\n", item)
 	fmt.Fprintf(w, "Latitude = %s\n", latitude)
@@ -143,13 +126,13 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func main() {
-	fs := http.FileServer(http.Dir("../frontend/dist"))
-	http.Handle("/", fs)
-	//http.HandleFunc("/search", searchHandler)
-	// fileServer := http.FileServer(http.Dir("./static"))
-	// http.Handle("/", fileServer)
-	// http.HandleFunc("/form", formHandler)
-	// http.HandleFunc("/hello", helloHandler)
+	// fs := http.FileServer(http.Dir("../frontend/dist"))
+	// http.Handle("/", fs)
+	// http.HandleFunc("/search", searchHandler)
+	fileServer := http.FileServer(http.Dir("./static"))
+	http.Handle("/", fileServer)
+	http.HandleFunc("/form", formHandler)
+	http.HandleFunc("/hello", helloHandler)
 
 	fmt.Printf("Starting server at port 8080\n")
 	if err := http.ListenAndServeTLS(":8080", "localhost.crt", "localhost.key", nil); err != nil {
