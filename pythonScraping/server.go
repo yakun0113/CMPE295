@@ -128,11 +128,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// fs := http.FileServer(http.Dir("../frontend/dist"))
 	// http.Handle("/", fs)
-<<<<<<< HEAD
-	// http.HandleFunc("/search", searchHandler)
-=======
 	// //http.HandleFunc("/search", searchHandler)
->>>>>>> 11d6ec02d73e3f5c98c18afef568f4641facefbe
 	fileServer := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fileServer)
 	http.HandleFunc("/form", formHandler)

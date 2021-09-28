@@ -7,7 +7,7 @@
             <input type="text" v-model="itemName" placeholder="Search everithing at Octopus"/>
             <input type="text" v-model="latitude" placeholder="Latitude" />
             <input type="text" v-model="longitude" placeholder="Longitude" />
-            <div><button @click="locateMe">Get my location</button></div>
+            <div><button class="sm" @click="locateMe">Get my location</button></div>
             <div v-if="errorStr">
                 Sorry, but the following error
                 occurred: {{errorStr}}
@@ -20,7 +20,7 @@
             <!-- <div v-if="location">
                 Your current location is {{ location.coords.latitude }}, {{ location.coords.longitude}}
             </div> -->
-            <div><button @click="submit">Search</button></div>
+            <div><button class="sm" @click="submit">Search</button></div>
         </form>
     </div>
 
@@ -64,7 +64,7 @@
 <script>
 import Nav from './Nav.vue'
 import ProductItem from './product/ProductItem.vue'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import axios from 'axios';
 
 export default {
@@ -96,7 +96,13 @@ export default {
         }
     },
     methods: {
+        ...mapActions([ ' setProduct ' ]),
         submit(){
+
+            const json = require('../Store/products.json');
+            this.$store.dispatch('setProduct',json);
+
+
             axios.post("http://localhost:8080/search", {
                 itemName: this.itemName,
                 latitude: this.latitude,
@@ -110,6 +116,7 @@ export default {
             })
 
             console.log(this.itemName,this.latitude,this.longitude)
+
         },
         async getLocation() {
       
@@ -147,6 +154,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.sm{
+   border: 0;
+    cursor: pointer;
+    box-sizing: border-box;
+    border-radius: 3px;
+    color: white;
+    background-color: rgb(106, 165, 82);
+    justify-content: space-around;
+    position: relative; 
+}
 .search-wrapper {
     position: relative;
     margin-top: 22px;
