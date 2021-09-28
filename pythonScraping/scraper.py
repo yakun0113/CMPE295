@@ -39,10 +39,11 @@ def get_target(product_name, option, latitude, longitude):
     driver = webdriver.Chrome(executable_path="/Users/brian80433/Desktop/pythonScraping/chromedriver", options = option)
     driver.get(Target_url)
     driver.execute_script("window.scrollBy(0, document.body.scrollHeight/5)")
-    time.sleep(0.5)
+    time.sleep(0.2)
     button = driver.find_element_by_xpath("//*[@id='__next']/div[3]/div/div[1]/div[2]/div/div[5]/button[2]")
     button.click()
     driver.get("https://www.target.com/s?searchTerm="+product_name+"&facetedValue=5zkty")
+    time.sleep(0.2)
 
     for i in range(15):
         driver.execute_script("window.scrollBy(0, document.body.scrollHeight/15)")
