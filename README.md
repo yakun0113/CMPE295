@@ -5,4 +5,5 @@ For executing pythonScraping,
 2. Since the number of searches an api key can have is limited (100 searches/ month), please use your own SerpApi API key to scrape data:
     - step1: go to SerpApi website: https://serpapi.com
     - step2: create a new account and get a free API key
-3. In terminal, run the command " go run server.go" to get the products json file.
+    - step3: go to scraper.py and replace the API key with your API key.
+3. In terminal, run the command " go run server.go" to get the products result.
