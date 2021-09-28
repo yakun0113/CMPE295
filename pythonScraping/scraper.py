@@ -65,6 +65,7 @@ def get_walgreens(product_name, option, latitude, longitude):
     search.send_keys(product_name)
     button = driver.find_element_by_xpath('//*[@id="storeServiceDiv"]/div[1]/div[1]/div[3]/div/div/button')
     button.click()
+    time.sleep(0.2)
 
     for i in range(15):
         driver.execute_script("window.scrollBy(0, document.body.scrollHeight/15)")
