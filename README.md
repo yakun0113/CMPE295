@@ -5,7 +5,7 @@ For executing pythonScraping,
 2. Since the number of searches an api key can have is limited (100 searches/ month), please use your own SerpApi API key to scrape data:
     - step1: go to SerpApi website: https://serpapi.com
     - step2: create a new account and get a free API key
-             <br />Yakun's API key: dafa5c94164dee0a24cfff9251cd140c253688f5be306031b69bcf4b8ca090b2
+             <br /> (Yakun's API key: dafa5c94164dee0a24cfff9251cd140c253688f5be306031b69bcf4b8ca090b2)
     - step3: go to scraper.py and replace the API key with your API key.
 3. Run two commands before going to the next step. The two commands are in the following page.
     - https://medium.com/rungo/secure-https-servers-in-go-a783008b36da
