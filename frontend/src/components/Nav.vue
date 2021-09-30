@@ -1,7 +1,7 @@
 <template>
   <div id="container">
     <div id='nav'>
-      <h1 id="left"> Octopus</h1>
+      <btn id="left" btnColor="btn btn-large btn-info" @click="goHome"> Octopus</btn>
       <div>
        <div id="right">
           <span class="nav-line-1">Hello,</span>
@@ -14,16 +14,22 @@
 </template>
 
 <script>
-
+import btn from './Button.vue'
 export default {
+  
   components: {
-    
+    btn
   },
   computed: {
 
   },
   methods: {
-
+    signIn(){
+      this.$router.push('/sign-in')
+    },
+    goHome(){
+      this.$router.push('/')
+    }
   }
 }
 </script>
@@ -47,7 +53,12 @@ export default {
 #left {
     float: left;
     text-align: left;
-    padding-left: 28px;
+    font-size: 35px;
+    font-weight: bold;
+    padding-top: 8px;
+    padding-left: 15px;
+    padding-right: 20px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 
@@ -56,6 +67,7 @@ export default {
     margin-right: 40px;
     margin-top: 15px; 
     color: white;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     cursor: pointer;
 }
 
