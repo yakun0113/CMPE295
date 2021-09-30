@@ -17,13 +17,15 @@ longitude := "-121.9187964"
 
 func scrape_product_with_python() {
 
-	cmd := exec.Command("/usr/local/bin/python", "scraper.py")
+	cmd := exec.Command("/usr/bin/python", "scraper.py")
 	output, err := cmd.Output()
 
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println("P1")
 	fmt.Println(string(output))
+	fmt.Println("P2")
 
 }
 
@@ -60,6 +62,7 @@ func formHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Longitude = %s\n", longitude)
 
 	info := item + "," + latitude + "," + longitude
+
 	pass_product_name_and_location(info)
 	scrape_product_with_python()
 	// Open our jsonFile
@@ -128,7 +131,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// fs := http.FileServer(http.Dir("../frontend/dist"))
 	// http.Handle("/", fs)
-	// //http.HandleFunc("/search", searchHandler)
+	// http.HandleFunc("/search", searchHandler)
 	fileServer := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fileServer)
 	http.HandleFunc("/form", formHandler)

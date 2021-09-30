@@ -207,7 +207,7 @@ if __name__ == '__main__':
     product_list = []
     serpApi_key = "826f229af259ebcfec493907d7b1f5e923f3efd20b8ea6b67417a6659870e7dc"
     option = webdriver.ChromeOptions()
-    option.add_argument("--headless")
+    # option.add_argument("--headless")
 
     args = (product_name, option, latitude, longitude)
 
