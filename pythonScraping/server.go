@@ -129,13 +129,13 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func main() {
-	// fs := http.FileServer(http.Dir("../frontend/dist"))
-	// http.Handle("/", fs)
-	// http.HandleFunc("/search", searchHandler)
-	fileServer := http.FileServer(http.Dir("./static"))
-	http.Handle("/", fileServer)
-	http.HandleFunc("/form", formHandler)
-	http.HandleFunc("/hello", helloHandler)
+	fs := http.FileServer(http.Dir("../frontend/dist"))
+	http.Handle("/", fs)
+	http.HandleFunc("/search", searchHandler)
+	// fileServer := http.FileServer(http.Dir("./static"))
+	// http.Handle("/", fileServer)
+	// http.HandleFunc("/form", formHandler)
+	// http.HandleFunc("/hello", helloHandler)
 
 	fmt.Printf("Starting server at port 8080\n")
 	if err := http.ListenAndServeTLS(":8080", "localhost.crt", "localhost.key", nil); err != nil {
