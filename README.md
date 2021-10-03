@@ -11,7 +11,7 @@ For executing pythonScraping,
 3. Run two commands before going to the next step. The two commands are in the following page.
     - https://medium.com/rungo/secure-https-servers-in-go-a783008b36da
    
-  ```$ openssl req  -new  -newkey rsa:2048  -nodes  -keyout localhost.key  -out localhost.csr
+  ``` openssl req  -new  -newkey rsa:2048  -nodes  -keyout localhost.key  -out localhost.csr
   
-  ```$ openssl  x509  -req  -days 365  -in localhost.csr  -signkey localhost.key  -out localhost.crt
+  ``` openssl  x509  -req  -days 365  -in localhost.csr  -signkey localhost.key  -out localhost.crt
 5. In terminal, run the command " go run server.go" to get the products result.
