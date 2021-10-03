@@ -3,43 +3,16 @@
     <div class="search-wrapper">
         <form v-on:submit.prevent="submitForm">
 
-            <input type="text" v-model="itemName" placeholder="Search everithing at Octopus"/>
-            <input type="text" v-model="latitude" placeholder="Latitude" />
-            <input type="text" v-model="longitude" placeholder="Longitude" />
+            <input type="text" name="itemName" v-model="itemName" class="input" placeholder="Search everithing at Octopus"/>
+            <input type="text" name="latitude" v-model="latitude" class="input" placeholder="Latitude" />
+            <input type="text" name="longitude" v-model="longitude" class="input" placeholder="Longitude" />
             <div><button class="sm" @click="locateMe">Get my location</button></div>           
             <div><button class="sm" @click="submit">Search</button></div>
            
         </form>
     </div>
 
-    <h1 class="wgr">What' popular</h1>
-    
-    <div class="test-cards-container">
-        <ProductItem 
-            v-for="item in walgreensList"
-            v-bind:href="item.name"
-            :key="item.id"
-            :item="item"   
-        />
-    </div>    
 
-    <div class="test-cards-container">
-        <ProductItem 
-            v-for="item in targetList"
-            v-bind:href="item.name"
-            :key="item.id"
-            :item="item"   
-        />
-    </div>    
-
-    <div class="test-cards-container">
-        <ProductItem 
-            v-for="item in walmartList"
-            v-bind:href="item.name"
-            :key="item.id"
-            :item="item"   
-        />
-    </div>
   </div>
 </template>
 
@@ -77,17 +50,16 @@ export default {
     },
     methods: {
         ...mapActions([ ' setProduct ' ]),
-        submit(){
+        submit: function(){
             this.$router.push('/search-result');
             const json = require('../Store/products.json');
             this.$store.dispatch('setProduct',json);
-
-
-            axios.post("https://localhost:8080/search", {
-                itemName: this.itemName,
-                latitude: this.latitude,
-                longitude: this.longitude,
-            })
+            var data = {
+                "itemName": this.itemName,
+                "latitude": (this.latitude),
+                "longitude": (this.longitude),
+            }
+            axios({ method: "POST", url: "https://localhost:8080/search", data: data, headers: {"content-type": "text/plain" } })
             .then((response) => {
                 console.log(response.data)
             })
@@ -120,8 +92,8 @@ export default {
         try {
             this.gettingLocation = false;
             this.location = await this.getLocation();
-            this.latitude = this.location.coords.latitude;
-            this.longitude = this.location.coords.longitude;
+            this.latitude = (this.location.coords.latitude).toString();
+            this.longitude = (this.location.coords.longitude).toString();
         } catch(e) {
             this.gettingLocation = false;
             this.errorStr = e.message;

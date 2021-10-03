@@ -128,8 +128,8 @@ export default {
         try {
             this.gettingLocation = false;
             this.location = await this.getLocation();
-            this.latitude = this.location.coords.latitude;
-            this.longitude = this.location.coords.longitude;
+            this.latitude = (this.location.coords.latitude).toString();
+            this.longitude = (this.location.coords.longitude).toString();
         } catch(e) {
             this.gettingLocation = false;
             this.errorStr = e.message;
