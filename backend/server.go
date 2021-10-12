@@ -8,14 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"time"
 )
-
-/*
-product := "beef"
-latitude := "37.3380242"
-longitude := "-121.9187964"
-*/
 
 func scrape_product_with_python() {
 
@@ -64,7 +57,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 
 	info := item + "," + latitude + "," + longitude
 	pass_product_name_and_location(info)
-	//scrape_product_with_python()
+	scrape_product_with_python()
 
 	data, err := os.Open("products.json")
 	if err != nil {
@@ -73,7 +66,6 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	// defer the closing of our jsonFile so that we can parse it later on
 	defer data.Close()
 	jdata, err := ioutil.ReadAll(data)
-	time.Sleep(time.Second * 1)
 	w.Write(jdata)
 }
 

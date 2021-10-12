@@ -18,11 +18,10 @@ def get_walmart(product_name, option, latitude, longitude):
     driver.get(Walmart_url)
     button = driver.find_element_by_xpath('//*[@id="content"]/div[2]/section[2]/div[2]/div/div/div/div/div/div[2]/form/div/div[3]/button')
     button.click()
-
+    time.sleep(0.5)
     for i in range(10):
         driver.execute_script("window.scrollBy(0, document.body.scrollHeight/10)")
         time.sleep(0.1)
-
     walmart_soup = BeautifulSoup(driver.page_source, 'html.parser')
     driver.quit()
     scrape_walmart(walmart_soup, Walmart_location)
@@ -40,11 +39,12 @@ def get_target(product_name, option, latitude, longitude):
     driver = webdriver.Chrome(executable_path="/Users/brian80433/Desktop/CMPE295-main/backend/chromedriver", options = option)
     driver.get(Target_url)
     driver.execute_script("window.scrollBy(0, document.body.scrollHeight/5)")
+    time.sleep(1)
     button = driver.find_element_by_xpath("//*[@id='__next']/div[3]/div/div[1]/div[2]/div/div[5]/button[2]")
     button.click()
     product_name = product_name.replace(" ","+")
     driver.get("https://www.target.com/s?searchTerm="+product_name+"&facetedValue=5zkty")
-    time.sleep(0.5)
+    time.sleep(1)
 
     for i in range(15):
         driver.execute_script("window.scrollBy(0, document.body.scrollHeight/15)")
@@ -84,15 +84,15 @@ def scrape_walmart(soup, Walmart_location):
 
     p_list = []
     productId = 0
-    productInfo = soup.select('ul[class="results-list grid-view"] div[class="Grid-col u-size-6-12 u-size-4-12-s u-size-3-12-m u-size-3-12-l"]')
+    productInfo = soup.select('a[class="display-block"]')
     
     for result in productInfo:
         productImage = result.select_one('img[class="tile-img"]')["src"]    
         productName = result.select_one('div[class="tile-title"]').text
         productPrice = result.select_one('span[class="price-group"]')
         productRating = result.select_one('span[class="stars-container"]')
-        productStatus = result.select_one('div[class="tile-in-store-info"]')
-        productLink = result.select_one('div[class="tile u-focusTile"] a[class="display-block"]')['href']
+        #productStatus = result.select_one('div[class="tile-in-store-info"]')
+        productLink = result['href']
 
         if productPrice == None:
             productPrice = "Price available in store"
@@ -104,7 +104,18 @@ def scrape_walmart(soup, Walmart_location):
             productRating = productRating['aria-label']
         productImage = "https:" + productImage
         productLink = "https://www.walmart.com/" + productLink
+        product = {
+                "id": productId,
+                'image': productImage,
+                "name": productName,
+                "price": productPrice,      
+                "rating": productRating,
+                "link": productLink,
+                  } 
+        p_list.append(product)    
+        productId += 1
 
+        ''' 
         if productStatus == None:
             continue
         else:
@@ -119,7 +130,7 @@ def scrape_walmart(soup, Walmart_location):
                   } 
             p_list.append(product)    
             productId += 1
-    
+    '''
     store = {
         "store": "Walmart",
         "location": Walmart_location,
@@ -135,7 +146,7 @@ def scrape_target(soup, Target_location):
     productInfo = soup.select('ul[class="Row-uds8za-0 jBYETz h-padding-t-tight"] li[class="Col-favj32-0 iXmsJV h-padding-a-none h-display-flex"]')
     
     for result in productInfo:
-        productImage = result.select_one('img')["src"]    
+        productImage = result.select_one('img')   
         productNameLink = result.select_one('a[class="Link__StyledLink-sc-4b9qcv-0 styles__StyledTitleLink-h3r0um-1 iBIqkb rwewC h-display-block h-text-bold h-text-bs"]')
         productName = productNameLink.text
         productPrice = result.select_one('div[data-test="current-price"]').span
@@ -151,6 +162,11 @@ def scrape_target(soup, Target_location):
             productRating = "No rating"
         else:
             productRating = productRating.text
+
+        if productImage == None:
+            continue
+        else:
+            productImage = productImage['src']
 
         product = {
                 "id": productId,
@@ -179,8 +195,7 @@ def scrape_walgreens(soup, Walgreens_location):
     productInfo = soup.select('div[class="item card card__product in-stores"]')
 
     for result in productInfo:
-        productImage = result.select_one('figure[class="product__img"] img')["src"]
-        productImage = "https:" + productImage
+        productImage = result.select_one('figure[class="product__img"] img')
         productName = result.select_one('div[name="product-title"]').text
         productPrice = result.select_one('div[class="product__price-contain"] span span span')
         productRating = result.select_one('span[class="product__rating"] figure img')
@@ -197,8 +212,12 @@ def scrape_walgreens(soup, Walgreens_location):
             productRating = "No Rating"
         else:
             productRating = productRating["alt"]
+        if productImage == None:
+            continue
+        else:
+            productImage = "https:" + productImage['src']
 
-        if productStatus is not None:
+        if productStatus is not None :
             product = {
                 "id": productId,
                 "image": productImage,
@@ -233,10 +252,10 @@ if __name__ == '__main__':
     longitude = info[2]
 
     product_list = []
-    serpApi_key = "dafa5c94164dee0a24cfff9251cd140c253688f5be306031b69bcf4b8ca090b2"
+    serpApi_key = "60d95a6c4f23372236426717be3e4349217eb73796fadb016cbacb0cc71d34ae"
     option = webdriver.ChromeOptions()
     option.add_argument("--headless")
-    option.add_argument("--window-size=1920x1080")
+    option.add_argument("window-size=2560,1440")
     args = (product_name, option, latitude, longitude)
     
     t1 = Thread(target=get_walmart, args= args)
@@ -254,7 +273,6 @@ if __name__ == '__main__':
     with open('products.json', 'w') as outfile:
         json.dump(product_list, outfile, indent=4)
     
-
     
 
  
