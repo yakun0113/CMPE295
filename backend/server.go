@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"time"
 )
 
 /*
@@ -18,7 +19,7 @@ longitude := "-121.9187964"
 
 func scrape_product_with_python() {
 
-	cmd := exec.Command("/usr/bin/python", "scraper.py")
+	cmd := exec.Command("/usr/local/bin/python", "/Users/brian80433/Desktop/CMPE295-main/backend/scraper.py")
 	output, err := cmd.Output()
 
 	if err != nil {
@@ -72,17 +73,12 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	// defer the closing of our jsonFile so that we can parse it later on
 	defer data.Close()
 	jdata, err := ioutil.ReadAll(data)
-
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.WriteHeader(http.StatusOK)
-	//w.Write(jdata)
-	if err := json.NewEncoder(w).Encode(jdata); err != nil {
-		panic(err)
-	}
+	time.Sleep(time.Second * 1)
+	w.Write(jdata)
 }
 
 func main() {
+
 	fs := http.FileServer(http.Dir("../frontend/dist"))
 	http.Handle("/", fs)
 	http.HandleFunc("/search", searchHandler)
