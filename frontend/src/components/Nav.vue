@@ -1,7 +1,7 @@
 <template>
   <div id="container">
     <div id='nav'>
-      <btn id="left" btnColor="btn btn-large btn-info" @click="goHome"> Octopus</btn>
+      <btn id="left" btnColor="btn btn-large btn-info" @click="goHome">Octopus</btn>
       <div>
        <div id="right">
           <span class="nav-line-1">Hello,</span>

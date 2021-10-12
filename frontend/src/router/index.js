@@ -6,7 +6,8 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    props: true
   },
   {
     path: '/sign-in',
@@ -15,8 +16,9 @@ const routes = [
   },
   {
     path: '/search-result',
-    name: 'search',
-    component: SearchResult
+    name: 'search-result',
+    component: SearchResult,
+    props: true
   },
 ]
 

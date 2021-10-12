@@ -1,15 +1,20 @@
 <template>
 <div class="container">
   <Nav />
+  <GoogleMaps/>
   <router-view/>
+
+
 </div>
 </template>
 
 <script>
 import Nav from './components/Nav.vue'
+import GoogleMaps from './components/GoogleMaps.vue'
 export default {
   components: {
     Nav,
+    GoogleMaps,
   }
 }
 </script>
