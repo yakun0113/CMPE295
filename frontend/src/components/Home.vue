@@ -2,13 +2,27 @@
   <div class="container">
     <div class="search-wrapper">
         <h1>Search products near you!</h1>
-        <form v-on:submit.prevent="submitForm">
-            <input type="text" name="itemName" v-model="itemName" class="input" placeholder="Search everithing at Octopus"/>
-            <input type="text" name="latitude" v-model="latitude" class="input" placeholder="Latitude" />
-            <input type="text" name="longitude" v-model="longitude" class="input" placeholder="Longitude" />
+        <GMapMap 
+            class = "maps"
+            :center="center"
+            :options="options"
+            :zoom="zoom"
+            map-type-id="terrain"
+            style="width: 100vw; height: 20rem"
+            @click = "getCoordinates"
+        >
+            <GMapMarker
+            :key="index"
+            v-for="(m, index) in marker"
+            :position="m.position"
+            :clickable="true"
+            :draggable="true"
+            @click="center = m.position"
+      />
+        </GMapMap>
+            <input type="text" v-model="itemName" placeholder="Search any product"/>
             <div><button class="sm" @click="locateMe">Get my location</button></div>           
-            <div><button class="sm" @click="submit">Search</button></div>
-        </form>
+            <div><button class="sm" @click="search">Search</button></div>
     </div>
     <LoadingBar v-show = "showBar" :percentage = "percentage"/>
   </div>
@@ -32,17 +46,27 @@ export default {
         showBar: false,
         start: false,
         percentage: 0,
-       
+        center: {lat: 37.0902 , lng:-95.7129},
+        zoom:4,
+        marker: [
+            {
+                position:{
+                    lat:null,
+                    lng:null,
+
+                }
+            }
+        ],
         }
     },
     components: {
         LoadingBar,
-  //      GoogleMaps
+       // GoogleMaps,
     },
   
     methods: {
         ...mapActions([ ' setProduct ' ]),
-        submit(){
+        search(){
                
             this.showBar = true
             var intval = setInterval(()=>{
@@ -51,16 +75,20 @@ export default {
                        
                     else
                         clearInterval(intval);
-                },5);
+                },25);
             var data = {
                 "itemName": this.itemName,
-                "latitude": this.latitude,
-                "longitude": this.longitude,
+                "latitude": (this.latitude).toString(),
+                "longitude": (this.longitude).toString(),
             }
             axios({ method: "POST", url: "https://localhost:8080/search", data: data, headers: {"content-type": "text/plain" } })
             .then((response) => {
                 
-                this.$router.push({name:'search-result', params:{productName: this.itemName}});
+                this.$router.push({name:'search-result', 
+                                   params:{
+                                       productName: this.itemName,
+                                       latitude: this.latitude,
+                                       longitude: this.longitude}});
                 const json = response.data;
                 this.$store.dispatch('setProduct',json);
                
@@ -89,13 +117,26 @@ export default {
         try {
             this.gettingLocation = false;
             this.location = await this.getLocation();
-            this.latitude = (this.location.coords.latitude).toString();
-            this.longitude = (this.location.coords.longitude).toString();
+            this.latitude = this.location.coords.latitude;
+            this.longitude = this.location.coords.longitude;
+            this.center = {lat: this.latitude, lng: this.longitude};
+            this.zoom = 13;
+            this.marker[0].position.lat = this.latitude;
+            this.marker[0].position.lng = this.longitude;
         } catch(e) {
             this.gettingLocation = false;
             this.errorStr = e.message;
         }
         
+        },
+
+        getCoordinates(event){
+            this.latitude = event.latLng.lat();
+            this.longitude = event.latLng.lng();
+            this.center = {lat: this.latitude, lng: this.longitude};
+            this.zoom = 13;
+            this.marker[0].position.lat = this.latitude;
+            this.marker[0].position.lng = this.longitude;
         }
         
     }
@@ -105,6 +146,12 @@ export default {
 <style lang="scss" scoped>
 .container{
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+.maps{
+  position: relative;
+  height: 20rem;
+  width: 50%;
+  left:25%;
 }
 .sm{
     border: 0;

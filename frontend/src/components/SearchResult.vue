@@ -1,6 +1,9 @@
 <template>
   <div class="container">
     <div class="search-wrapper">
+        <GoogleMaps class = "map" 
+                    :latitude="latitude" :longitude="longitude" 
+                    :storeLocations="storeLocations"/>
         <h1>Results for {{productName}}</h1>
     </div>
    
@@ -52,6 +55,7 @@
 
 <script>
 import ProductItem from './product/ProductItem.vue'
+import GoogleMaps from './GoogleMaps.vue'
 import { mapGetters } from 'vuex'
 export default {
     name: "search-result",
@@ -63,12 +67,14 @@ export default {
 
         }
     },
-    props:['productName'],
+    props:['productName','latitude', 'longitude'],
     components: {
-        ProductItem
+        ProductItem,
+        GoogleMaps
     },
     computed: {
-        ...mapGetters(['walmart', 'target', 'walgreens']),
+        ...mapGetters(['walmart', 'target', 'walgreens',
+                       'store_locations']),
         walmartList() {
             return this.walmart.slice(this.walmart_index, this.walmart_index + 6)
         },
@@ -78,19 +84,19 @@ export default {
         walgreensList() {
             return this.walgreens.slice(this.walgreens_index, this.walgreens_index+6)
         },
-
         walmartLength(){
             return this.walmart.length
         },
-
         targetLength(){
             return this.target.length
         },
-
         walgreensLength(){
             return this.walgreens.length
+        },
+        storeLocations() {
+            return this.store_locations
         }
-    
+
     },
    
     methods: {
@@ -207,6 +213,10 @@ export default {
     display: block;
     float:right;
   
+  }
+
+  .map{
+      left:25%;
   }
 
 </style>
