@@ -75,7 +75,7 @@ export default {
                        
                     else
                         clearInterval(intval);
-                },25);
+                },30);
             var data = {
                 "itemName": this.itemName,
                 "latitude": (this.latitude).toString(),
@@ -120,7 +120,7 @@ export default {
             this.latitude = this.location.coords.latitude;
             this.longitude = this.location.coords.longitude;
             this.center = {lat: this.latitude, lng: this.longitude};
-            this.zoom = 13;
+            this.zoom = 10;
             this.marker[0].position.lat = this.latitude;
             this.marker[0].position.lng = this.longitude;
         } catch(e) {
@@ -134,7 +134,7 @@ export default {
             this.latitude = event.latLng.lat();
             this.longitude = event.latLng.lng();
             this.center = {lat: this.latitude, lng: this.longitude};
-            this.zoom = 13;
+            this.zoom = 10;
             this.marker[0].position.lat = this.latitude;
             this.marker[0].position.lng = this.longitude;
         }
