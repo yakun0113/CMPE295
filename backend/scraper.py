@@ -5,6 +5,12 @@ from selenium import webdriver
 import time
 from threading import Thread
 
+product_list = []
+serpApi_key = "60d95a6c4f23372236426717be3e4349217eb73796fadb016cbacb0cc71d34ae"
+option = webdriver.ChromeOptions()
+option.add_argument("--headless")
+option.add_argument("window-size=2560,1440")
+
 def get_walmart(product_name, option, latitude, longitude):
 
     Walmart = requests.get("https://serpapi.com/search.json?engine=google_maps&q=walmart&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + serpApi_key)
@@ -241,21 +247,8 @@ def scrape_walgreens(soup, Walgreens_location):
 
     product_list.append(store)
 
-if __name__ == '__main__':
-           
-    with open('product_name.txt') as f:
-        info = f.read()
+def scrape(product_name, latitude, longitude):
 
-    info = info.split(",")
-    product_name = info[0]
-    latitude = info[1]
-    longitude = info[2]
-
-    product_list = []
-    serpApi_key = "60d95a6c4f23372236426717be3e4349217eb73796fadb016cbacb0cc71d34ae"
-    option = webdriver.ChromeOptions()
-    option.add_argument("--headless")
-    option.add_argument("window-size=2560,1440")
     args = (product_name, option, latitude, longitude)
     
     t1 = Thread(target=get_walmart, args= args)
@@ -270,10 +263,9 @@ if __name__ == '__main__':
     t2.join()
     t3.join()
     
-    with open('products.json', 'w') as outfile:
-        json.dump(product_list, outfile, indent=4)
+    return product_list
     
-    
+
 
  
 

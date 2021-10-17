@@ -1,44 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
-	"os/exec"
 )
-
-func scrape_product_with_python() {
-
-	cmd := exec.Command("/usr/local/bin/python", "/Users/brian80433/Desktop/CMPE295-main/backend/scraper.py")
-	output, err := cmd.Output()
-
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(string(output))
-
-}
-
-func pass_product_name_and_location(info string) {
-
-	f, err := os.Create("product_name.txt")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer f.Close()
-
-	_, err2 := f.WriteString(info)
-
-	if err2 != nil {
-		log.Fatal(err2)
-	}
-
-}
 
 type searchPost struct {
 	ItemName  string `json:"itemName"`
@@ -46,27 +14,50 @@ type searchPost struct {
 	Longitude string `json:"longitude"`
 }
 
+type searchResults struct {
+	Store    string     `json:"store"`
+	Location location   `json:"location"`
+	Products []products `json:"products"`
+}
+
+type location struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+}
+type products struct {
+	ID     int32  `json:"id"`
+	Image  string `json:"image"`
+	Name   string `json:"name"`
+	Price  string `json:"price"`
+	Rating string `json:"rating"`
+	Link   string `json:"link"`
+}
+
 func searchHandler(w http.ResponseWriter, r *http.Request) {
+
 	decoder := json.NewDecoder(r.Body)
 
 	var sp searchPost
 	decoder.Decode(&sp)
-	item := sp.ItemName
-	latitude := sp.Latitude
-	longitude := sp.Longitude
+	search_data, err := json.Marshal(&sp)
 
-	info := item + "," + latitude + "," + longitude
-	pass_product_name_and_location(info)
-	scrape_product_with_python()
-
-	data, err := os.Open("products.json")
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
-	// defer the closing of our jsonFile so that we can parse it later on
-	defer data.Close()
-	jdata, err := ioutil.ReadAll(data)
-	w.Write(jdata)
+
+	resp, err := http.Post("http://localhost:8000/", "application/json", //r.Body)
+		bytes.NewBuffer(search_data))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	var sr []searchResults
+
+	json.NewDecoder(resp.Body).Decode(&sr)
+
+	product_data, err := json.Marshal(&sr)
+
+	w.Write(product_data)
 }
 
 func main() {
