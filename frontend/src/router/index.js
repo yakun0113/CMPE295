@@ -5,7 +5,7 @@ import SearchResult from '@/components/SearchResult.vue'
 const routes = [
   {
     path: '/',
-    name: 'Home',
+    name: 'home',
     component: Home,
     props: true
   },
@@ -26,5 +26,7 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
+
 
 export default router

@@ -14,7 +14,7 @@
                   <form class="form-group">
                      <input v-model="emailLogin" type="email" class="form-control" placeholder="Email" required>
                      <input v-model="passwordLogin" type="password" class="form-control" placeholder="Password" required>
-                     <input type="submit" class="btn btn-primary" @click="doLogin">
+                     <input type="submit" class="btn btn-primary" @click.prevent="doLogin">
                      <p>Don't have an account? <a href="#" @click="registerActive = !registerActive, emptyFields = false">Sign up here</a>
                      </p>
                      <p><a href="#">Forgot your password?</a></p>
@@ -25,9 +25,10 @@
                   <h1>Sign Up</h1>
                   <form class="form-group">
                      <input v-model="emailReg" type="email" class="form-control" placeholder="Email" required>
+                     <input v-model="nameReg" type="name" class="form-control" placeholder="Name" required>
                      <input v-model="passwordReg" type="password" class="form-control" placeholder="Password" required>
                      <input v-model="confirmReg" type="password" class="form-control" placeholder="Confirm Password" required>
-                     <input type="submit" class="btn btn-primary" @click="doRegister">
+                     <input type="submit" class="btn btn-primary" @click.prevent="doRegister">
                      <p>Already have an account? <a href="#" @click="registerActive = !registerActive, emptyFields = false">Sign in here</a>
                      </p>
                   </form>
@@ -41,6 +42,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 
 
 export default {
@@ -54,9 +56,10 @@ export default {
       emailLogin: "",
       passwordLogin: "",
       emailReg: "",
+      nameReg: "",
       passwordReg: "",
       confirmReg: "",
-      emptyFields: false
+      emptyFields: false,
     }
   },
   computed:{
@@ -66,21 +69,69 @@ export default {
     doLogin() {
          if (this.emailLogin === "" || this.passwordLogin === "") {
             this.emptyFields = true;
-         } else {
-            alert("You are now logged in");
+            return
+         } 
+         var userData = {
+                "email": this.emailLogin,
+                "password": this.passwordLogin,
+            }
+            axios({ method: "POST", url: "https://localhost:8080/signIn", data: userData, headers: {"content-type": "application/json" } })
+            .then((response)=> {
+                  if (response.data === "Wrong password!"){
+                     window.alert(response.data);
+                     this.passwordLogin = "";
+                     return
+                     }
+                  else if (response.data === "Account not registered!"){
+                     window.alert(response.data);
+                     this.emailLogin = "";
+                     this.passwordLogin = "";
+                     return
+                  }
+                  else{
+                     window.alert("Welcome, "+response.data.name + "!");
+                     this.$emit('signIn')
+                     this.$router.push({name:'home'})
+                  }
+               })
+               .catch((error) => {
+                window.alert(`The API returned an error: ${error.data}`);
+            })
+         
          }
       },
       
       doRegister() {
-         if (this.emailReg === "" || this.passwordReg === "" || this.confirmReg === "") {
+         if (this.nameReg === "" || this.emailReg === "" || this.passwordReg === "" || this.confirmReg === "") {
             this.emptyFields = true;
-         } else {
-            alert("You are now registered");
+            return
+         } 
+         if (this.passwordReg != this.confirmReg){
+            window.alert("Please confirm your password again!");
+            return
          }
-      }
+         
+         var userData = {
+                "name": this.nameReg,
+                "email": this.emailReg,
+                "password": this.passwordReg,
+            }
+            axios({ method: "POST", url: "https://localhost:8080/signUp", data: userData, headers: {"content-type": "application/json" } })
+            .then((response)=> {
+                  window.alert(response.data);
+                  if (response.data === "Signed up successfully!"){
+                     this.registerActive = false;
+                     }
+               })
+               .catch((error) => {
+                window.alert(`The API returned an error: ${error.data}`);
+            })
    
   }
+
 }
+
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

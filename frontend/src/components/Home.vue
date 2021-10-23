@@ -34,6 +34,7 @@ import { mapActions } from 'vuex'
 import axios from 'axios';
 //import GoogleMaps from './GoogleMaps.vue';
 export default {
+    name:"home",
     data() {
         return {
         test: null,
@@ -67,7 +68,14 @@ export default {
     methods: {
         ...mapActions([ ' setProduct ' ]),
         search(){
-               
+            if (this.latitude === null || this.latitude === null){
+                window.alert("Please choose a location!")
+                return
+            }
+            if (this.itemName === ""){
+                window.alert("Please enter an item to search!")
+                return
+            }
             this.showBar = true
             var intval = setInterval(()=>{
                     if(this.percentage < 100)
@@ -81,7 +89,7 @@ export default {
                 "latitude": (this.latitude).toString(),
                 "longitude": (this.longitude).toString(),
             }
-            axios({ method: "POST", url: "https://localhost:8080/search", data: data, headers: {"content-type": "text/plain" } })
+            axios({ method: "POST", url: "https://localhost:8080/search", data: data, headers: {"content-type": "application/json" } })
             .then((response) => {
                 
                 this.$router.push({name:'search-result', 

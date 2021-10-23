@@ -197,22 +197,27 @@ export default {
 
   .test-cards-container {
     display: flex;
+    clear: both;
     flex-wrap: wrap;
     justify-content: center;
-    padding-top: 10px;
+    float:center;
   }
 
   .angle-left-b{
   
     display: block;
     float:left;
+    clear: both;
+    padding-top: 300px;
 
   }
 
   .angle-right-b{
     display: block;
     float:right;
-  
+    padding-top: 300px;
+    clear: both;
+
   }
 
   .map{
