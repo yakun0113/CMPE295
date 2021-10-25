@@ -21,7 +21,7 @@
                   </form>
                </div>
 
-               <div v-else class="card register" v-bind:class="{ error: emptyFields }">
+               <div v-else class="card register">
                   <h1>Sign Up</h1>
                   <form class="form-group">
                      <input v-model="emailReg" type="email" class="form-control" placeholder="Email" required>
@@ -29,7 +29,7 @@
                      <input v-model="passwordReg" type="password" class="form-control" placeholder="Password" required>
                      <input v-model="confirmReg" type="password" class="form-control" placeholder="Confirm Password" required>
                      <input type="submit" class="btn btn-primary" @click.prevent="doRegister">
-                     <p>Already have an account? <a href="#" @click="registerActive = !registerActive, emptyFields = false">Sign in here</a>
+                     <p>Already have an account? <a href="#" @click="registerActive = !registerActive">Sign in here</a>
                      </p>
                   </form>
                </div>
@@ -69,6 +69,7 @@ export default {
     doLogin() {
          if (this.emailLogin === "" || this.passwordLogin === "") {
             this.emptyFields = true;
+            //window.alert("Please fill in all fields!")
             return
          } 
          var userData = {
@@ -77,33 +78,36 @@ export default {
             }
             axios({ method: "POST", url: "https://localhost:8080/signIn", data: userData, headers: {"content-type": "application/json" } })
             .then((response)=> {
-                  if (response.data === "Wrong password!"){
-                     window.alert(response.data);
+                  window.alert(response.data.message);
+
+                  if (response.data.message === "Wrong password!"){
                      this.passwordLogin = "";
-                     return
                      }
-                  else if (response.data === "Account not registered!"){
-                     window.alert(response.data);
+                  else if (response.data.message === "Account not registered!"){
                      this.emailLogin = "";
                      this.passwordLogin = "";
+                  }
+                  else if (response.data.message === "Something's wrong, please try again!"){
                      return
                   }
                   else{
-                     window.alert("Welcome, "+response.data.name + "!");
                      this.$emit('signIn')
                      this.$router.push({name:'home'})
                   }
+                  //this.emptyFields = false;
+
+
                })
                .catch((error) => {
                 window.alert(`The API returned an error: ${error.data}`);
             })
          
          }
-      },
+      ,
       
       doRegister() {
          if (this.nameReg === "" || this.emailReg === "" || this.passwordReg === "" || this.confirmReg === "") {
-            this.emptyFields = true;
+            window.alert("Please fill in all fields!")
             return
          } 
          if (this.passwordReg != this.confirmReg){
@@ -118,9 +122,13 @@ export default {
             }
             axios({ method: "POST", url: "https://localhost:8080/signUp", data: userData, headers: {"content-type": "application/json" } })
             .then((response)=> {
-                  window.alert(response.data);
-                  if (response.data === "Signed up successfully!"){
+                  window.alert(response.data.message);
+                  if (response.data.message === "Signed up successfully!"){
                      this.registerActive = false;
+                     this.emailReg = "";
+                     this.nameReg = "";
+                     this.passwordReg = "";
+                     this.confirmReg = "";
                      }
                })
                .catch((error) => {
@@ -128,7 +136,7 @@ export default {
             })
    
   }
-
+  }
 }
 
 
