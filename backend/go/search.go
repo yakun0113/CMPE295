@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type searchPost struct {
@@ -33,18 +35,17 @@ type products struct {
 	Link   string `json:"link"`
 }
 
-func search(w http.ResponseWriter, r *http.Request) {
-
-	decoder := json.NewDecoder(r.Body)
-
+func search(c *gin.Context) {
 	var sp searchPost
-	decoder.Decode(&sp)
+
+	if err := c.BindJSON(&sp); err != nil {
+		return
+	}
 	search_data, err := json.Marshal(&sp)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	resp, err := http.Post("http://localhost:8000", "application/json",
 		bytes.NewBuffer(search_data))
 
@@ -55,9 +56,6 @@ func search(w http.ResponseWriter, r *http.Request) {
 
 	json.NewDecoder(resp.Body).Decode(&sr)
 
-	product_data, err := json.Marshal(&sr)
-	if err != nil {
-		log.Fatal(err)
-	}
-	w.Write(product_data)
+	c.IndentedJSON(http.StatusCreated, sr)
+
 }

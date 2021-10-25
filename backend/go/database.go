@@ -2,12 +2,11 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"net/http"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -15,11 +14,11 @@ import (
 )
 
 var client *mongo.Client
-var SECRET_KEY = []byte("cmpe295")
+var dbUri = "mongodb+srv://Brian80433:cmpe295@octopus.oolyk.mongodb.net/octopusDB?retryWrites=true&w=majority"
 
 func connectDB() {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	client, _ = mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://Brian80433:cmpe295@cluster0.oolyk.mongodb.net/octopus?retryWrites=true&w=majority"))
+	client, _ = mongo.Connect(ctx, options.Client().ApplyURI(dbUri))
 }
 
 type User struct {
@@ -28,48 +27,42 @@ type User struct {
 	Password string `json:"password" bson:"password"`
 }
 
-func signUp(response http.ResponseWriter, request *http.Request) {
-
-	response.Header().Set("Content-Type", "application/json")
-
+func signUp(c *gin.Context) {
 	var user User
 	var dbUser User
-
-	collection := client.Database("octopus").Collection("user")
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-
-	json.NewDecoder(request.Body).Decode(&user)
-	err := collection.FindOne(ctx, bson.M{"email": user.Email}).Decode(&dbUser)
-
-	if err == nil {
-		response.Write([]byte("This email is already registered!"))
+	if err := c.BindJSON(&user); err != nil {
 		return
 	}
-
+	collection := client.Database("octopusDB").Collection("user")
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err := collection.FindOne(ctx, bson.M{"email": user.Email}).Decode(&dbUser)
+	if err == nil {
+		c.IndentedJSON(http.StatusConflict, gin.H{"message": "This email is already registered!"})
+		return
+	}
 	user.Password = getHash([]byte(user.Password))
 	result, err := collection.InsertOne(ctx, user)
 	if err != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte(`{"message":"` + err.Error() + `"}`))
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 	} else if result != nil {
-		response.Write([]byte("Signed up successfully!"))
+		c.IndentedJSON(http.StatusCreated, gin.H{"message": "Signed up successfully!"})
 	}
+
 }
 
-func signIn(response http.ResponseWriter, request *http.Request) {
-
-	response.Header().Set("Content-Type", "application/json")
+func signIn(c *gin.Context) {
 
 	var user User
 	var dbUser User
-
-	collection := client.Database("octopus").Collection("user")
+	if err := c.BindJSON(&user); err != nil {
+		return
+	}
+	collection := client.Database("octopusDB").Collection("user")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	json.NewDecoder(request.Body).Decode(&user)
 	err := collection.FindOne(ctx, bson.M{"email": user.Email}).Decode(&dbUser)
 
 	if err != nil {
-		response.Write([]byte("Account not registered!"))
+		c.IndentedJSON(http.StatusAccepted, gin.H{"message": "Account not registered!"})
 		return
 	}
 	userPass := []byte(user.Password)
@@ -78,29 +71,16 @@ func signIn(response http.ResponseWriter, request *http.Request) {
 	passErr := bcrypt.CompareHashAndPassword(dbPass, userPass)
 
 	if passErr != nil {
-		log.Println(passErr)
-		response.Write([]byte("Wrong password!"))
+		c.IndentedJSON(http.StatusAccepted, gin.H{"message": "Wrong password!"})
 		return
 	}
-	userName := dbUser.Name
-	jwtToken, err := GenerateJWT()
+	jwtToken, err := GenerateJWT(dbUser.Email)
 	if err != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte(`{"message":"` + err.Error() + `"}`))
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Something's wrong, please try again!"})
 		return
 	}
-	response.Write([]byte(`{"token":"` + jwtToken + `", "name":"` + userName + `"}`))
+	c.IndentedJSON(http.StatusAccepted, gin.H{"token": jwtToken, "message": "Welcome " + dbUser.Name + "!"})
 
-}
-
-func GenerateJWT() (string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
-	tokenString, err := token.SignedString(SECRET_KEY)
-	if err != nil {
-		log.Println("Error in JWT token generation")
-		return "", err
-	}
-	return tokenString, nil
 }
 
 func getHash(pwd []byte) string {
