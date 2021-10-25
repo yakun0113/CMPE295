@@ -23,5 +23,5 @@ To run this app,
   - npm install --save @fawmi/vue-google-maps
   - npm run build
   
-5. In terminal, go to the backend/go file and run the command " go run server.go" to start the server.
+5. In terminal, go to the backend/go file and run the command "go run *.go" to start the server.
 6. In terminal, go to the backend/python file and run the command "python3 scraping_server.py" to start the scraping server.
