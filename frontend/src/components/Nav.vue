@@ -1,12 +1,13 @@
 <template>
   <div id="container">
     <div id='nav'>
-      <btn id="left" btnColor="btn btn-large btn-info" @click="goHome"> Octopus</btn>
+      <btn id="left" btnColor="btn btn-large btn-info" @click="goHome">Octopus</btn>
       <div>
-       <div id="right">
-          <span class="nav-line-1">Hello,</span>
+       <div id="right" class="nav-right">
+          <span v-if="isLoggedIn" class="nav-line-0" >My watchlist</span>
+          <span v-if="isLoggedIn" class="nav-line-1" >My account</span>
           <span v-if="!isLoggedIn" class="nav-line-2" @click="signIn">Sign in</span>
-          <span v-else class="nav-line-2">{{currentUser}}</span>
+          <span v-else class="nav-line-2" @click="signOut">Sign out</span>
        </div>
       </div>   
     </div> 
@@ -16,7 +17,12 @@
 <script>
 import btn from './Button.vue'
 export default {
-  
+  props:{
+    isLoggedIn:{
+      default: false
+    }
+  }
+  ,
   components: {
     btn
   },
@@ -27,6 +33,13 @@ export default {
     signIn(){
       this.$router.push('/sign-in')
     },
+
+    signOut(){
+      this.$emit('signOut')
+      this.$router.push('/')
+      window.alert("Signed out successfully!")
+    },
+
     goHome(){
       this.$router.push('/')
     }
@@ -80,20 +93,29 @@ export default {
   margin-top: 0%; 
   margin-right: 5px; 
 }
-.nav-line-1 {
-  float: left;
-  font-size: 13px;
-  line-height: 8px;
-  height: 11px;
-  font-weight: 400;
-  clear: both;
-  display:block;
-  
+.nav-right{
+  display:flex
 }
-.nav-line-2 {
+.nav-line-0 {
+  float: left;
   clear: both;
   display: block;
-  padding-right: 10px;
+  padding-top: 10px;
+  padding-right: 20px;
+}
+.nav-line-1 {
+  float: center;
+  clear: both;
+  display: block;
+  padding-top: 10px;
+  padding-right: 20px;
+}
+.nav-line-2 {
+  float: right;
+  clear: both;
+  display: block;
+  padding-top: 10px;
+  padding-right: 20px;
 }
 .text-center {
   text-align: center;
@@ -119,5 +141,28 @@ export default {
   .leave-enter, .leave-leave-to {
     opacity: 0;
     transform: translateX(-50%);
+  }
+  .parent{
+      display:flex;
+  }
+
+  .test-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 10px;
+  }
+
+  .angle-left-b{
+  
+    display: block;
+    float:left;
+
+  }
+
+  .angle-right-b{
+    display: block;
+    float:right;
+  
   }
 </style>

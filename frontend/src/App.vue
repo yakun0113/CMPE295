@@ -1,15 +1,25 @@
 <template>
 <div class="container">
-  <Nav />
-  <router-view/>
+  <Nav :isLoggedIn="isLoggedIn" @signOut = "isLoggedIn = false"/>
+
+  <router-view @signIn = "isLoggedIn = true" />
+
 </div>
+
 </template>
 
 <script>
 import Nav from './components/Nav.vue'
+//import GoogleMaps from './components/GoogleMaps.vue'
 export default {
+  data(){
+    return{
+      isLoggedIn:false
+    }
+  },
   components: {
     Nav,
+    //GoogleMaps,
   }
 }
 </script>

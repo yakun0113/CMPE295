@@ -2,9 +2,10 @@
   <div class="card">
       <h3>{{item.name}}</h3>
       <img class="image" :src="image" />
-      <h5 class="price">Price: {{item.price}}</h5>
-      <p class="description">Rating : {{item.rating}}</p>
+      <h5 class="price">{{item.price}}</h5>
+      <p class="description">{{item.rating}}</p>
       <a :href="link">Learn More</a>
+  <div><button class="add" @click="addToWatchList">Add to watchlist</button></div>
   </div>
 </template>
 
@@ -82,5 +83,13 @@ h3 {
         width:80px;
         height:80px;
     }
-
+.add{
+    border: 0;
+    cursor: pointer;
+    box-sizing: border-box;
+    border-radius: 3px;
+    color: white;
+    background-color: rgb(124, 168, 107);
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
 </style>

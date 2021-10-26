@@ -5,8 +5,9 @@ import SearchResult from '@/components/SearchResult.vue'
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'home',
+    component: Home,
+    props: true
   },
   {
     path: '/sign-in',
@@ -15,8 +16,9 @@ const routes = [
   },
   {
     path: '/search-result',
-    name: 'search',
-    component: SearchResult
+    name: 'search-result',
+    component: SearchResult,
+    props: true
   },
 ]
 
@@ -24,5 +26,7 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
+
 
 export default router

@@ -1,54 +1,40 @@
 <template>
   <div class="container">
     <div class="search-wrapper">
-        <form v-on:submit.prevent="submitForm">
-
-            <input type="text" v-model="itemName" placeholder="Search everithing at Octopus"/>
-            <input type="text" v-model="latitude" placeholder="Latitude" />
-            <input type="text" v-model="longitude" placeholder="Longitude" />
+        <h1>Search products near you!</h1>
+        <GMapMap 
+            class = "maps"
+            :center="center"
+            :options="options"
+            :zoom="zoom"
+            map-type-id="terrain"
+            style="width: 100vw; height: 20rem"
+            @click = "getCoordinates"
+        >
+            <GMapMarker
+            :key="index"
+            v-for="(m, index) in marker"
+            :position="m.position"
+            :clickable="true"
+            :draggable="true"
+            @click="center = m.position"
+      />
+        </GMapMap>
+            <input type="text" v-model="itemName" placeholder="Search any product"/>
             <div><button class="sm" @click="locateMe">Get my location</button></div>           
-            <div><button class="sm" @click="submit">Search</button></div>
-           
-        </form>
+            <div><button class="sm" @click="search">Search</button></div>
     </div>
-
-    <h1 class="wgr">What' popular</h1>
-    
-    <div class="test-cards-container">
-        <ProductItem 
-            v-for="item in walgreensList"
-            v-bind:href="item.name"
-            :key="item.id"
-            :item="item"   
-        />
-    </div>    
-
-    <div class="test-cards-container">
-        <ProductItem 
-            v-for="item in targetList"
-            v-bind:href="item.name"
-            :key="item.id"
-            :item="item"   
-        />
-    </div>    
-
-    <div class="test-cards-container">
-        <ProductItem 
-            v-for="item in walmartList"
-            v-bind:href="item.name"
-            :key="item.id"
-            :item="item"   
-        />
-    </div>
+    <LoadingBar v-show = "showBar" :percentage = "percentage"/>
   </div>
 </template>
 
 <script>
-import ProductItem from './product/ProductItem.vue'
-import { mapGetters, mapActions } from 'vuex'
+import LoadingBar from './LoadingBar'
+import { mapActions } from 'vuex'
 import axios from 'axios';
-
+//import GoogleMaps from './GoogleMaps.vue';
 export default {
+    name:"home",
     data() {
         return {
         test: null,
@@ -58,75 +44,107 @@ export default {
         errorStr:null,
         latitude:null,
         longitude:null,
+        showBar: false,
+        start: false,
+        percentage: 0,
+        center: {lat: 37.0902 , lng:-95.7129},
+        zoom:4,
+        marker: [
+            {
+                position:{
+                    lat:null,
+                    lng:null,
+
+                }
+            }
+        ],
         }
     },
     components: {
-        ProductItem
+        LoadingBar,
+       // GoogleMaps,
     },
-    computed: {
-        ...mapGetters(['walmart', 'target', 'walgreens']),
-        walmartList() {
-            return this.walmart.slice(0,6)
-        },
-        targetList() {
-            return this.target.slice(0,6)
-        },
-        walgreensList() {
-            return this.walgreens.slice(0,6)
-        }
-    },
+  
     methods: {
         ...mapActions([ ' setProduct ' ]),
-        submit(){
-            this.$router.push('/search-result');
-            const json = require('../Store/products.json');
-            this.$store.dispatch('setProduct',json);
-
-
-            axios.post("https://localhost:8080/search", {
-                itemName: this.itemName,
-                latitude: this.latitude,
-                longitude: this.longitude,
-            })
+        search(){
+            if (this.latitude === null || this.latitude === null){
+                window.alert("Please choose a location!")
+                return
+            }
+            if (this.itemName === ""){
+                window.alert("Please enter an item to search!")
+                return
+            }
+            this.showBar = true
+            var intval = setInterval(()=>{
+                    if(this.percentage < 100)
+                        this.percentage += .1;
+                       
+                    else
+                        clearInterval(intval);
+                },30);
+            var data = {
+                "itemName": this.itemName,
+                "latitude": (this.latitude).toString(),
+                "longitude": (this.longitude).toString(),
+            }
+            axios({ method: "POST", url: "https://localhost:8080/search", data: data, headers: {"content-type": "application/json" } })
             .then((response) => {
+                
+                this.$router.push({name:'search-result', 
+                                   params:{
+                                       productName: this.itemName,
+                                       latitude: this.latitude,
+                                       longitude: this.longitude}});
+                const json = response.data;
+                this.$store.dispatch('setProduct',json);
+               
                 console.log(response.data)
             })
             .catch((error) => {
                 window.alert(`The API returned an error: ${error.data}`);
             })
-
             console.log(this.itemName,this.latitude,this.longitude)
-
         },
         async getLocation() {
       
         return new Promise((resolve, reject) => {
-
             if(!("geolocation" in navigator)) {
             reject(new Error('Geolocation is not available.'));
             }
-
             navigator.geolocation.getCurrentPosition(pos => {
             resolve(pos);
             }, err => {
             reject(err);
             });
-
         });
         },
         async locateMe() {
-
         this.gettingLocation = true;
         try {
             this.gettingLocation = false;
             this.location = await this.getLocation();
             this.latitude = this.location.coords.latitude;
             this.longitude = this.location.coords.longitude;
+            this.center = {lat: this.latitude, lng: this.longitude};
+            this.zoom = 10;
+            this.marker[0].position.lat = this.latitude;
+            this.marker[0].position.lng = this.longitude;
         } catch(e) {
             this.gettingLocation = false;
             this.errorStr = e.message;
         }
         
+        },
+
+        getCoordinates(event){
+            this.latitude = event.latLng.lat();
+            this.longitude = event.latLng.lng();
+            this.center = {lat: this.latitude, lng: this.longitude};
+            this.zoom = 10;
+            this.marker[0].position.lat = this.latitude;
+            this.marker[0].position.lng = this.longitude;
         }
         
     }
@@ -136,7 +154,12 @@ export default {
 <style lang="scss" scoped>
 .container{
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
-
+}
+.maps{
+  position: relative;
+  height: 20rem;
+  width: 50%;
+  left:25%;
 }
 .sm{
     border: 0;
@@ -146,7 +169,6 @@ export default {
     color: white;
     background-color: rgb(124, 168, 107);
     font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-
 }
 .search-wrapper {
     position: relative;
@@ -165,23 +187,9 @@ export default {
         color: rgba(10, 10, 10, 0.5);
         font-weight: 600;
         font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-
       }
     }
   }
-  .image{
-      vertical-align:middle;
-  }
-    .wgr{
-        background-color: rgb(61, 92, 138);
-        color: rgb(255, 255, 255);
-        padding: 5px;
-    }
 
-  .test-cards-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding-top: 10px;
-  }
+
 </style>
