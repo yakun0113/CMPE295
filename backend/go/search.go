@@ -9,34 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type searchPost struct {
-	ItemName  string `json:"itemName"`
-	Latitude  string `json:"latitude"`
-	Longitude string `json:"longitude"`
-}
-
-type searchResults struct {
-	Store    string     `json:"store"`
-	Location location   `json:"location"`
-	Products []products `json:"products"`
-}
-
-type location struct {
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
-}
-
-type products struct {
-	ID     int32  `json:"id"`
-	Image  string `json:"image"`
-	Name   string `json:"name"`
-	Price  string `json:"price"`
-	Rating string `json:"rating"`
-	Link   string `json:"link"`
-}
-
 func search(c *gin.Context) {
-	var sp searchPost
+	var sp SearchPost
 
 	if err := c.BindJSON(&sp); err != nil {
 		return
@@ -52,7 +26,7 @@ func search(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var sr []searchResults
+	var sr []SearchResults
 
 	json.NewDecoder(resp.Body).Decode(&sr)
 
