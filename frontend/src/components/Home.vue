@@ -32,7 +32,6 @@
 import LoadingBar from './LoadingBar'
 import { mapActions } from 'vuex'
 import axios from 'axios';
-//import GoogleMaps from './GoogleMaps.vue';
 export default {
     name:"home",
     data() {
@@ -89,14 +88,15 @@ export default {
                 "latitude": (this.latitude).toString(),
                 "longitude": (this.longitude).toString(),
             }
-            axios({ method: "POST", url: "https://localhost:8080/search", data: data, headers: {"content-type": "application/json" } })
+            axios({ method: "POST", url: "https://localhost:8080/handleSearch", data: data, headers: {"content-type": "application/json" } })
             .then((response) => {
                 
                 this.$router.push({name:'search-result', 
                                    params:{
                                        productName: this.itemName,
                                        latitude: this.latitude,
-                                       longitude: this.longitude}});
+                                       longitude: this.longitude,
+                                       button: 'Add'}});
                 const json = response.data;
                 this.$store.dispatch('setProduct',json);
                

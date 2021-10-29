@@ -16,7 +16,8 @@
                 v-for="item in walmartList"
                 v-bind:href="item.name"
                 :key="item.id"
-                :item="item"   
+                :item="item" 
+                :button="button"
             />
         </div>
         <div><unicon class="angle-right-b" @click.stop = "scrollRight('wright')" v-if="walmart_index + 6 <= walmartLength - 1" name="angle-right-b" width="50" height="50" fill="black"></unicon></div>
@@ -32,6 +33,8 @@
                 v-bind:href="item.name"
                 :key="item.id"
                 :item="item"   
+                :button="button" 
+
             />
         </div>
         <div><unicon class="angle-right-b" @click.stop = "scrollRight('tright')" v-if="target_index + 6 <= targetLength - 1" name="angle-right-b" width="50" height="50" fill="black"></unicon></div>
@@ -45,7 +48,9 @@
                 v-for="item in walgreensList"
                 v-bind:href="item.name"
                 :key="item.id"
-                :item="item"   
+                :item="item" 
+                :button="button"  
+  
             />
         </div>
         <div><unicon class="angle-right-b" @click.stop = "scrollRight('gright')" v-if="walgreens_index + 6 <= walgreensLength - 1" name="angle-right-b" width="50" height="50" fill="black"></unicon></div>
@@ -67,7 +72,7 @@ export default {
 
         }
     },
-    props:['productName','latitude', 'longitude'],
+    props:['productName','latitude', 'longitude','button'],
     components: {
         ProductItem,
         GoogleMaps
@@ -119,7 +124,6 @@ export default {
                case "wleft":
                    if(this.walmart_index >= 6){
                         this.walmart_index-=6;
-                        console.log(this.walmart_index);
 
                    }
                    break;   

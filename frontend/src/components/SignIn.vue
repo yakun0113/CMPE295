@@ -43,6 +43,7 @@
 
 <script>
 import axios from 'axios';
+import { mapActions } from 'vuex'
 
 
 export default {
@@ -66,17 +67,19 @@ export default {
   },
 
   methods: {
+   ...mapActions([ 'signIn' ]),
+
     doLogin() {
+       
          if (this.emailLogin === "" || this.passwordLogin === "") {
             this.emptyFields = true;
-            //window.alert("Please fill in all fields!")
             return
          } 
          var userData = {
                 "email": this.emailLogin,
                 "password": this.passwordLogin,
             }
-            axios({ method: "POST", url: "https://localhost:8080/signIn", data: userData, headers: {"content-type": "application/json" } })
+            axios({ method: "POST", url: "https://localhost:8080/handleSignIn", data: userData, headers: {"content-type": "application/json" } })
             .then((response)=> {
                   window.alert(response.data.message);
 
@@ -91,10 +94,10 @@ export default {
                      return
                   }
                   else{
-                     this.$emit('signIn')
+                     this.$store.dispatch('signIn',this.emailLogin);
                      this.$router.push({name:'home'})
+                  
                   }
-                  //this.emptyFields = false;
 
 
                })
@@ -119,8 +122,9 @@ export default {
                 "name": this.nameReg,
                 "email": this.emailReg,
                 "password": this.passwordReg,
+                "watchlist": [],
             }
-            axios({ method: "POST", url: "https://localhost:8080/signUp", data: userData, headers: {"content-type": "application/json" } })
+            axios({ method: "POST", url: "https://localhost:8080/handleSignUp", data: userData, headers: {"content-type": "application/json" } })
             .then((response)=> {
                   window.alert(response.data.message);
                   if (response.data.message === "Signed up successfully!"){

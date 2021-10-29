@@ -1,8 +1,8 @@
 <template>
 <div class="container">
-  <Nav :isLoggedIn="isLoggedIn" @signOut = "isLoggedIn = false"/>
+  <Nav/>
 
-  <router-view @signIn = "isLoggedIn = true" />
+  <router-view />
 
 </div>
 
@@ -10,16 +10,9 @@
 
 <script>
 import Nav from './components/Nav.vue'
-//import GoogleMaps from './components/GoogleMaps.vue'
 export default {
-  data(){
-    return{
-      isLoggedIn:false
-    }
-  },
   components: {
     Nav,
-    //GoogleMaps,
   }
 }
 </script>
