@@ -25,14 +25,15 @@
             <div><button class="sm" @click="search">Search</button></div>
     </div>
     <LoadingBar v-show = "showBar" :percentage = "percentage"/>
+    <SearchResult />
   </div>
 </template>
 
 <script>
 import LoadingBar from './LoadingBar'
 import { mapActions } from 'vuex'
-import axios from 'axios';
-//import GoogleMaps from './GoogleMaps.vue';
+import SearchResult from './SearchResult.vue'
+//import axios from 'axios';
 export default {
     name:"home",
     data() {
@@ -62,12 +63,18 @@ export default {
     },
     components: {
         LoadingBar,
+        SearchResult
        // GoogleMaps,
     },
   
     methods: {
         ...mapActions([ ' setProduct ' ]),
         search(){
+
+            var product = require("./products.json");
+            console.log(product);
+            this.$store.dispatch('setProduct', product);
+
             if (this.latitude === null || this.latitude === null){
                 window.alert("Please choose a location!")
                 return
@@ -84,27 +91,30 @@ export default {
                     else
                         clearInterval(intval);
                 },30);
-            var data = {
-                "itemName": this.itemName,
-                "latitude": (this.latitude).toString(),
-                "longitude": (this.longitude).toString(),
-            }
-            axios({ method: "POST", url: "https://localhost:8080/search", data: data, headers: {"content-type": "application/json" } })
-            .then((response) => {
+            
+            // var data = {
+            //     "itemName": this.itemName,
+            //     "latitude": (this.latitude).toString(),
+            //     "longitude": (this.longitude).toString(),
+            // }
+            // axios({ method: "POST", url: "https://localhost:8080/handleSearch", data: data, headers: {"content-type": "application/json" } })
+            // .then((response) => {
                 
-                this.$router.push({name:'search-result', 
-                                   params:{
-                                       productName: this.itemName,
-                                       latitude: this.latitude,
-                                       longitude: this.longitude}});
-                const json = response.data;
-                this.$store.dispatch('setProduct',json);
+            //     this.$router.push({name:'search-result', 
+            //                        params:{
+            //                            productName: this.itemName,
+            //                            latitude: this.latitude,
+            //                            longitude: this.longitude,
+            //                            button: 'Add'}});
+            //     const json = response.data;
+            //     this.$store.dispatch('setProduct',json);
                
-                console.log(response.data)
-            })
-            .catch((error) => {
-                window.alert(`The API returned an error: ${error.data}`);
-            })
+            //     console.log(response.data)
+                
+            // })
+            // .catch((error) => {
+            //     window.alert(`The API returned an error: ${error.data}`);
+            // })
             console.log(this.itemName,this.latitude,this.longitude)
         },
         async getLocation() {

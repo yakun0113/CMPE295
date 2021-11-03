@@ -1,29 +1,32 @@
 package main
 
 import (
-	"log"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
 )
 
 var SECRET_KEY = []byte("cmpe295")
 
-func GenerateJWT(userEmail string) (string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["authorized"] = true
-	claims["user"] = userEmail
-	claims["exp"] = time.Now().Add(time.Minute * 10).Unix()
-	tokenString, err := token.SignedString(SECRET_KEY)
-	if err != nil {
-		log.Println("Error in JWT token generation")
-		return "", err
-	}
-	return tokenString, nil
+type Claims struct {
+	Account string `json:"account"`
+	Role    string `json:"role"`
+	jwt.StandardClaims
 }
 
-func AuthRequired(c *gin.Context) {
-
+func GenerateJWT(userEmail string) (string, error) {
+	var err error
+	//Creating Access Token
+	os.Setenv("ACCESS_SECRET", "jdnfksdmfksd") //this should be in an env file
+	atClaims := jwt.MapClaims{}
+	atClaims["authorized"] = true
+	atClaims["userEmail"] = userEmail
+	atClaims["exp"] = time.Now().Add(time.Minute * 15).Unix()
+	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
+	token, err := at.SignedString([]byte(os.Getenv("ACCESS_SECRET")))
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }

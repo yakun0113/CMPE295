@@ -6,9 +6,9 @@ import time
 from threading import Thread
 
 product_list = []
-serpApi_key = "60d95a6c4f23372236426717be3e4349217eb73796fadb016cbacb0cc71d34ae"
+serpApi_key = "d26f9f09f7f0571b2324bb6b095e9ee1f1e263889d8ae589bd30975dad5f56d0"
 option = webdriver.ChromeOptions()
-#option.add_argument("--headless")
+option.add_argument("--headless")
 option.add_argument("window-size=2560,1440")
 
 def get_walmart(product_name, option, latitude, longitude):

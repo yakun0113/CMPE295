@@ -4,8 +4,8 @@
       <btn id="left" btnColor="btn btn-large btn-info" @click="goHome">Octopus</btn>
       <div>
        <div id="right" class="nav-right">
-          <span v-if="isLoggedIn" class="nav-line-0" >My watchlist</span>
-          <span v-if="isLoggedIn" class="nav-line-1" >My account</span>
+          <span v-if="isLoggedIn" class="nav-line-0" @click.prevent="watchlist">My watchlist</span>
+          <span v-if="isLoggedIn" class="nav-line-1" @click="account">My account</span>
           <span v-if="!isLoggedIn" class="nav-line-2" @click="signIn">Sign in</span>
           <span v-else class="nav-line-2" @click="signOut">Sign out</span>
        </div>
@@ -16,33 +16,56 @@
 
 <script>
 import btn from './Button.vue'
+import { mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
+import axios from 'axios'
 export default {
-  props:{
-    isLoggedIn:{
-      default: false
-    }
-  }
-  ,
+
   components: {
     btn
   },
   computed: {
-
+    ...mapGetters(['logged','user']),
+    isLoggedIn(){
+      return this.logged
+    },
+    getUser(){
+      return this.user
+    },
   },
   methods: {
+    ...mapActions(['signOut','setWatchlist']),
+
     signIn(){
       this.$router.push('/sign-in')
     },
 
     signOut(){
-      this.$emit('signOut')
+      this.$store.dispatch('signOut');
       this.$router.push('/')
       window.alert("Signed out successfully!")
     },
 
     goHome(){
       this.$router.push('/')
-    }
+    },
+
+    watchlist(){
+      axios({ method: "GET", url: "https://localhost:8080/handleWatchlist/"+ this.getUser})
+            .then((response) => {
+                const json = response.data.result;
+                this.$store.dispatch('setWatchlist',json);
+                this.$router.push({name:'watchlist', params:{button:'Delete'}});
+
+            })
+            .catch((error) => {
+                window.alert(`The API returned an error: ${error.data}`);
+            })
+    },
+
+    account(){
+      this.$router.push('/account')
+      }
   }
 }
 </script>

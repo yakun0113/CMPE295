@@ -18,60 +18,10 @@ class S(BaseHTTPRequestHandler):
         longitude = post_data["longitude"]
         #product_data = scrape(product_name, latitude, longitude)
         #product_data = scrape(product_name, "37.3382", "-121.8863")
-
-        
-        product_data = [
-        {
-        "store": "Walmart",
-         "location": {
-             "latitude": 37.3304293,
-             "longitude": -121.86017489999999
-         },
-         "products": [
-             {
-                 "id": 0,
-                 "image": "https://i5.walmartimages.com/asr/b6ccc571-3db7-4c95-98c4-a18dc0f8ef85_2.890efc06d40e935239c92d473006aaea.jpeg?odnWidth=282&odnHeight=282&odnBg=ffffff",
-                 "name": "All Natural* 93% Lean/7% Fat Lean Ground Beef Tray, 1 lb",
-                 "price": "$6.40",
-                 "rating": "3.6 Stars. 33 reviews.",
-                 "link": "https://www.walmart.com//ip/All-Natural-93-Lean-7-Fat-Lean-Ground-Beef-Tray-1-lb/824841960"
-             }
-             ]
-             },
-        {
-         "store": "Target",
-         "location": {
-             "latitude": 37.3386461,
-             "longitude": -121.9044629
-         },
-         "products": [
-             {
-                 "id": 100,
-                 "image": "https://target.scene7.com/is/image/Target/GUEST_a302f4ac-2ce0-44d3-b41b-e3c423f7248b",
-                 "name": "All Natural 93/7 Ground Beef - 1lb - Good & Gather\u2122",
-                 "price": "$6.69",
-                 "rating": "3.6 out of 5 stars with 82 ratings",
-                 "link": "https://www.target.com/p/all-natural-93-7-ground-beef-1lb-good-38-gather-8482/-/A-13288296#lnk=sametab"
-             }]}, 
-             {
-         "store": "Walgreens",
-         "location": {
-             "latitude": 37.3237775,
-             "longitude": -121.91337499999999
-         },
-         "products": [
-             {
-                 "id": 200,
-                 "image": "https://pics.drugstore.com/prodimg/413351/450.jpg",
-                 "name": "Dinty MooreBeef Stew\u00a0\u00a0-\u00a010 Ounces  ",
-                 "price": "2/$5.00 or 1/$2.99",
-                 "rating": "4.4 out of 5 total 67 reviews",
-                 "link": "https://www.walgreens.com/store/c/dinty-moore-beef-stew/ID=prod1495467-product"
-             }]}]
-        
-
+        file = open("products.json",'r')
+        product_data = file.read()
         self._set_response()
-        product_data = json.dumps(product_data)
+        #product_data = json.dumps(product_data)
         product_data = product_data.encode('utf-8')
         self.wfile.write(product_data)
 
@@ -94,3 +44,6 @@ if __name__ == '__main__':
         run(port=int(argv[1]))
     else:
         run()
+
+
+

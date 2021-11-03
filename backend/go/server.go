@@ -1,47 +1,58 @@
 package main
 
 import (
+	"context"
+	"fmt"
+	"log"
+	"time"
+
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+var client *mongo.Client
+var ctx context.Context
+
+//var collection *mongo.Collection
+
+var dbUri = "mongodb+srv://Brian80433:cmpe295@octopus.oolyk.mongodb.net/octopusDB?retryWrites=true&w=majority"
+
+func connectDB() {
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	client, _ = mongo.Connect(ctx, options.Client().ApplyURI(dbUri))
+	//collection := client.Database("octopusDB").Collection("user")
+
+}
 
 func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.Use(static.Serve("/", static.LocalFile("../../frontend/dist", true)))
-	router.POST("/search", search)
-	router.POST("/signUp", signUp)
-	router.POST("/signIn", signIn)
+	router.POST("/handleSearch", search)
+	router.POST("/handleSignUp", signUp)
+	router.POST("/handleSignIn", signIn)
 
-	authorized := router.Group("/")
-	authorized.Use(AuthRequired)
-	authorized.GET("/userProfile")
-	authorized.POST("/userProfile")
-	authorized.PUT("/userProfile")
-	authorized.DELETE("/userProfile")
-
-	authorized.GET("/watchlist")
-	authorized.POST("/watchlist")
-	authorized.PUT("/watchlist")
-	authorized.DELETE("/watchlist")
-
-	connectDB()
-
-	router.RunTLS(":8080", "localhost.crt", "localhost.key")
-
+	router.GET("/handleWatchlist/:email", getItems)
+	router.PUT("/handleWatchlist/:email", addItem)
+	router.DELETE("/handleWatchlist/:email", deleteItem)
 	/*
-			fs := http.FileServer(http.Dir("../../frontend/dist"))
-		http.Handle("/", fs)
-		http.HandleFunc("/search", search)
-		http.HandleFunc("/signUp", signUp)
-		http.HandleFunc("/signIn", signIn)
+		authorized := router.Group("/")
+		authorized.Use(AuthRequired)
+		{
+			authorized.GET("/handleAccount/:email")
+			authorized.PUT("/handleAccount/:email")
+			authorized.DELETE("/handleAccount/:email")
 
-		fmt.Printf("Starting server at port 8080\n")
-		connectDB()
-		if err := http.ListenAndServeTLS(":8080", "localhost.crt", "localhost.key", nil); err != nil {
-			log.Fatal(err)
+			authorized.GET("/handleWatchlist/:email", getItems)
+			authorized.PUT("/handleWatchlist", addItem)
+			authorized.DELETE("/handleWatchlist/:email", deleteItem)
 		}
-
 	*/
+	connectDB()
+	fmt.Printf("Starting server at port 8080\n")
+
+	log.Fatal(router.RunTLS(":8080", "localhost.crt", "localhost.key"))
 }

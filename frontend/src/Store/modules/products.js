@@ -21,10 +21,12 @@ const mutations = {
 		state.walmartList = products[0].products;
         state.targetList = products[1].products;
         state.walgreensList = products[2].products;
-
+	
 		state.storeLocations['walmart'] = products[0].location;
 		state.storeLocations['target'] = products[1].location;
 		state.storeLocations['walgreens'] = products[2].location;
+
+		console.log(state.walmartList)
 	},
 }
 
