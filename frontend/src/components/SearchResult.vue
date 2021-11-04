@@ -15,13 +15,8 @@
     </div>
    
     <h1 class="wmr"><img src='../assets/walmart.jpg'  width="50" height="50" class="image"/>Walmart</h1>    
-    <unicon class="angle-left-b" @click.stop = "scrollLeft('wleft')" v-if="walmart_index >= 0" name="angle-double-left" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
-    <unicon class="angle-right-b" @click.stop = "scrollRight('wright')" v-if="walmart_index + 6 <= walmartLength-1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
-
     <div class = "parent">
-        
         <div class="test-cards-container">
-
             <ProductItem 
                 v-for="item in walmartList"
                 v-bind:href="item.name"
@@ -31,11 +26,11 @@
             />
         </div>
     </div>
+    <unicon class="angle-left-b" @click.stop = "scrollLeft('wleft')" v-if="walmart_index >= 0" name="angle-double-left" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
+    <unicon class="angle-right-b" @click.stop = "scrollRight('wright')" v-if="walmart_index + 6 <= walmartLength-1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
+
 
     <h1 class="tgt"><img src='../assets/target.jpg'  width="50" height="50" class="image"/>Target</h1>   
-  
-    <unicon class="angle-left-b" @click.stop = "scrollLeft('tleft')" v-if="target_index >= 0" name="angle-double-left" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
-    <unicon class="angle-right-b" @click.stop = "scrollRight('tright')" v-if="target_index + 6 <= targetLength-1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
     <div class = "parent">
         
         <div class="test-cards-container">
@@ -45,17 +40,13 @@
                 :key="item.id"
                 :item="item"   
                 :button="button" 
-
-            />
+           />
         </div>
     </div>
+    <unicon class="angle-left-b" @click.stop = "scrollLeft('tleft')" v-if="target_index >= 0" name="angle-double-left" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
+    <unicon class="angle-right-b" @click.stop = "scrollRight('tright')" v-if="target_index + 6 <= targetLength-1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
     <h1 class="wgr"><img src='../assets/walgreens.jpg' width="50" height="50" class="image"/>Walgreens</h1>
-    
-    <unicon class="angle-left-b" @click.stop = "scrollLeft('gleft')" v-if="walgreens_index >= 0" name="angle-double-left" height="40px" width="40px"  fill="black" hover-fill="limegreen"></unicon>
-    <unicon class="angle-right-b" @click.stop = "scrollRight('gright')" v-if="walgreens_index + 6 <= walgreensLength-1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
-    
-    <div class = "parent">
-        
+    <div class = "parent">    
         <div class="test-cards-container">
             <ProductItem 
                 v-for="item in walgreensList"
@@ -67,6 +58,10 @@
             />
         </div>
     </div>
+     
+    <unicon class="angle-left-b" @click.stop = "scrollLeft('gleft')" v-if="walgreens_index >= 0" name="angle-double-left" height="40px" width="40px"  fill="black" hover-fill="limegreen"></unicon>
+    <unicon class="angle-right-b" @click.stop = "scrollRight('gright')" v-if="walgreens_index + 6 <= walgreensLength-1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
+    
   </div>
 </template>
 
