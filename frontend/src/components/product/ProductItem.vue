@@ -1,12 +1,12 @@
 <template>
   <div class="card">
       <h3>{{item.name}}</h3>
-      <img class="image" :src="image" />
+      <img class="image" :src="item.image" />
       <h5 class="price">{{item.price}}</h5>
       <p class="description">{{item.rating}}</p>
-      <a :href="link">Learn More</a>
+      <a :href="item.link">Learn More</a>
   <div><button v-if="isLoggedIn && (button==='Add')" class="add" @click.prevent="addToWatchlist">Add to watchlist</button></div>
-  <div><button v-if="isLoggedIn && (button==='Delete')" class="delete" @click.prevent="removeFromWatchlist">Remove from watchlist</button></div>
+  <div><button v-if="isLoggedIn && (button==='Delete')" class="delete" @click.prevent="removeFromWatchlist(item)">Remove from watchlist</button></div>
   </div>
 </template>
 
@@ -17,12 +17,16 @@ export default {
     props: [ 'item', 'button' ],
     data(){
         return{
-            image: this.item.image,
-            link: this.item.link,
+            //image: this.item.image,
+            //link: this.item.link,
         }
     },
   computed: {
-     ...mapGetters(['user','logged']),
+     ...mapGetters(['user','logged','watchlist']),
+     
+     watchList() {
+            return this.watchlist.slice(this.watchlist_index, this.watchlist_index + 6)
+        },
     getUser(){
         return this.user    
     },
@@ -32,27 +36,36 @@ export default {
       
   },
   methods: {
-      goToOrigin(){
-          window.location.href = this.item.link;
-      },
+      //goToOrigin(){
+      //    window.location.href = this.item.link;
+      //},
       addToWatchlist(){
-           axios({ method: "PUT", url: "https://localhost:8080/handleWatchlist/"+ this.getUser, data: this.item, headers: {"content-type": "application/json" } })
+           var data = {
+               "image": this.item.image,
+               "name": this.item.name,
+               "price": this.item.price,
+               "rating": this.item.rating,
+               "link": this.item.link,
+           }
+           axios({ method: "POST", url: "https://localhost:8000/users/watchlist/"+ this.getUser.user_id, data: data, headers: {"content-type": "application/json", "token":this.getUser.token } })
             .then((response) => {
                 this.$toast.show(response.data.message);
                 setTimeout(this.$toast.clear,2000)
             })
             .catch((error) => {
-                window.alert(`The API returned an error: ${error.data}`);
+                  window.alert(error.response.data.error);
             })
       },
-      removeFromWatchlist(){
-           axios({ method: "DELETE", url: "https://localhost:8080/handleWatchlist/" + this.getUser + "/" + this.item.link })
+      removeFromWatchlist(item){
+           axios({ method: "DELETE", url: "https://localhost:8000/users/watchlist/" + this.getUser.user_id + "/" + item.item_id, headers: {"content-type": "application/json", "token":this.getUser.token } })
             .then((response) => {
+                const json = response.data.result;
+                this.$store.dispatch('setWatchlist',json);
                 this.$toast.show(response.data.message);
                 setTimeout(this.$toast.clear,2000)
             })
             .catch((error) => {
-                window.alert(`The API returned an error: ${error.data}`);
+                  window.alert(error.response.data.error);
             })
   }
 }

@@ -79,35 +79,19 @@ export default {
                 "email": this.emailLogin,
                 "password": this.passwordLogin,
             }
-            axios({ method: "POST", url: "https://localhost:8080/handleSignIn", data: userData, headers: {"content-type": "application/json" } })
+            axios({ method: "POST", url: "https://localhost:8000/users/login", data: userData, headers: {"content-type": "application/json" } })
             .then((response)=> {
-                  window.alert(response.data.message);
-
-                  if (response.data.message === "Wrong password!"){
-                     this.passwordLogin = "";
-                     }
-                  else if (response.data.message === "Account not registered!"){
-                     this.emailLogin = "";
-                     this.passwordLogin = "";
-                  }
-                  else if (response.data.message === "Something's wrong, please try again!"){
-                     return
-                  }
-                  else{
-                     this.$store.dispatch('signIn',this.emailLogin);
+                     window.alert("Welcome to Octopus, " + response.data.name + "!")
+                     this.$store.dispatch('signIn',response.data);
                      this.$router.push({name:'home'})
                   
-                  }
-
-
-               })
+                  })
                .catch((error) => {
-                window.alert(`The API returned an error: ${error.data}`);
-            })
-         
-         }
-      ,
-      
+                  window.alert(error.response.data.error);
+}
+            )
+         },
+
       doRegister() {
          if (this.nameReg === "" || this.emailReg === "" || this.passwordReg === "" || this.confirmReg === "") {
             window.alert("Please fill in all fields!")
@@ -124,7 +108,7 @@ export default {
                 "password": this.passwordReg,
                 "watchlist": [],
             }
-            axios({ method: "POST", url: "https://localhost:8080/handleSignUp", data: userData, headers: {"content-type": "application/json" } })
+            axios({ method: "POST", url: "https://localhost:8000/users/signup", data: userData, headers: {"content-type": "application/json" } })
             .then((response)=> {
                   window.alert(response.data.message);
                   if (response.data.message === "Signed up successfully!"){
@@ -134,9 +118,12 @@ export default {
                      this.passwordReg = "";
                      this.confirmReg = "";
                      }
+                  this.registerActive=false
+                 
+                  
                })
                .catch((error) => {
-                window.alert(`The API returned an error: ${error.data}`);
+                  window.alert(error.response.data.error);
             })
    
   }

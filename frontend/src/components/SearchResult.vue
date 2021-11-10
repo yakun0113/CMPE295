@@ -15,6 +15,7 @@
     </div>
    
     <h1 class="wmr"><img src='../assets/walmart.jpg'  width="50" height="50" class="image"/>Walmart</h1>    
+    <h3 v-if="walmartLength === 0">No results for Walmart</h3>
     <div class = "parent">
         <div class="test-cards-container">
             <ProductItem 
@@ -26,13 +27,13 @@
             />
         </div>
     </div>
-    <unicon class="angle-left-b" @click.stop = "scrollLeft('wleft')" v-if="walmart_index >= 0" name="angle-double-left" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
-    <unicon class="angle-right-b" @click.stop = "scrollRight('wright')" v-if="walmart_index + 6 <= walmartLength-1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
+    <unicon  class="angle-left-b" @click.stop = "scrollLeft('wleft')" v-if="walmart_index >= 0 && walmartLength != 0" name="angle-double-left" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
+    <unicon  class="angle-right-b" @click.stop = "scrollRight('wright')" v-if="walmart_index + 6 <= walmartLength-1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
 
 
     <h1 class="tgt"><img src='../assets/target.jpg'  width="50" height="50" class="image"/>Target</h1>   
+    <h3 v-if="targetLength === 0">No results for Target</h3>
     <div class = "parent">
-        
         <div class="test-cards-container">
             <ProductItem 
                 v-for="item in targetList"
@@ -43,10 +44,13 @@
            />
         </div>
     </div>
-    <unicon class="angle-left-b" @click.stop = "scrollLeft('tleft')" v-if="target_index >= 0" name="angle-double-left" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
+    <unicon class="angle-left-b" @click.stop = "scrollLeft('tleft')" v-if="target_index >= 0 && targetLength != 0" name="angle-double-left" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
     <unicon class="angle-right-b" @click.stop = "scrollRight('tright')" v-if="target_index + 6 <= targetLength-1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
+
     <h1 class="wgr"><img src='../assets/walgreens.jpg' width="50" height="50" class="image"/>Walgreens</h1>
-    <div class = "parent">    
+    <h3 v-if="walgreensLength === 0">No results for Walgreens</h3>
+
+    <div class = "parent">   
         <div class="test-cards-container">
             <ProductItem 
                 v-for="item in walgreensList"
@@ -59,7 +63,7 @@
         </div>
     </div>
      
-    <unicon class="angle-left-b" @click.stop = "scrollLeft('gleft')" v-if="walgreens_index >= 0" name="angle-double-left" height="40px" width="40px"  fill="black" hover-fill="limegreen"></unicon>
+    <unicon class="angle-left-b" @click.stop = "scrollLeft('gleft')" v-if="walgreens_index >= 0 && walgreensLength != 0" name="angle-double-left" height="40px" width="40px"  fill="black" hover-fill="limegreen"></unicon>
     <unicon class="angle-right-b" @click.stop = "scrollRight('gright')" v-if="walgreens_index + 6 <= walgreensLength-1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
     
   </div>
@@ -76,7 +80,8 @@ export default {
         walmart_index: 0,
         target_index: 0,
         walgreens_index: 0,
-
+        sortBy: "",
+        sortDirection: "",
         }
     },
     props:['productName','latitude', 'longitude','button'],
@@ -108,7 +113,6 @@ export default {
         storeLocations() {
             return this.store_locations
         }
-
     },
    
     methods: {
@@ -123,15 +127,12 @@ export default {
                case "gright":
                    this.walgreens_index+=6;
            }
-
         },
         scrollLeft(id){
-
             switch (id){
                case "wleft":
                    if(this.walmart_index >= 6){
                         this.walmart_index-=6;
-
                    }
                    break;   
                case "tleft":
@@ -144,7 +145,6 @@ export default {
                         this.walgreens_index-=6;
                    }
            }
-
         }
     }
     
@@ -155,13 +155,11 @@ export default {
 .container{
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
 }
-
 .dropdown {
   position: relative;
   display: inline-block;
   margin-left: 900px;
 }
-
 .dropdown-content {
   display: none;
   position: absolute;
@@ -176,13 +174,11 @@ export default {
     width: 200px;
     height:75px;
     border-radius: 5px;
-
     color:white;
 }
 .dropdown:hover .dropdown-content {
   display: block;
 }
-
 .sm{
    border: 0;
     cursor: pointer;
@@ -229,11 +225,9 @@ export default {
         color: white;
         padding: 5px;
     }
-
   .parent{
       display:flex;
   }
-
   .test-cards-container {
     display: flex;
     clear: both;
@@ -241,10 +235,12 @@ export default {
     justify-content: center;
     float:center;
   }
-
   .map{
       left:25%;
   }
 
+  h3{
+      text-align: center;
+  }
  
 </style>

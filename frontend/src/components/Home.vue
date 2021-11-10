@@ -19,21 +19,55 @@
             :draggable="true"
             @click="center = m.position"
       />
+            <GMapMarker
+        :key="index"
+        v-for="(m, index) in walmart_marker"
+        :position="m.position"
+        :clickable="true"
+        :draggable="true"
+        :icon= '{
+          url: "https://s3.amazonaws.com/www-inside-design/uploads/2018/04/walmart-square.jpg",
+          scaledSize: {width: 30, height: 30},
+      }'
+      />
+
+            <GMapMarker
+        :key="index"
+        v-for="(m, index) in target_marker"
+        :position="m.position"
+        :clickable="true"
+        :draggable="true"
+        :icon= '{
+          url: "https://i.pinimg.com/originals/11/98/8f/11988f04000898c4106a7dd89f819469.jpg",
+          scaledSize: {width: 30, height: 30},
+      }'
+      />
+
+            <GMapMarker
+        :key="index"
+        v-for="(m, index) in walgreens_marker"
+        :position="m.position"
+        :clickable="true"
+        :draggable="true"
+        :icon= '{
+          url: "https://www.tkasphalt.com/wp-content/uploads/2017/03/Walgreens-logo.jpg",
+          scaledSize: {width: 30, height: 30},
+      }'
+      />
         </GMapMap>
             <input type="text" v-model="itemName" placeholder="Search any product"/>
             <div><button class="sm" @click="locateMe">Get my location</button></div>           
             <div><button class="sm" @click="search">Search</button></div>
     </div>
     <LoadingBar v-show = "showBar" :percentage = "percentage"/>
-    <SearchResult />
+
   </div>
 </template>
 
 <script>
 import LoadingBar from './LoadingBar'
 import { mapActions } from 'vuex'
-import SearchResult from './SearchResult.vue'
-//import axios from 'axios';
+import axios from 'axios';
 export default {
     name:"home",
     data() {
@@ -59,22 +93,41 @@ export default {
                 }
             }
         ],
+        walmart_marker:[
+          {
+          position: {
+             lat: null, 
+             lng: null,
+             label: "Walmart"
+          }
+        }],
+        target_marker:[
+         {
+          position: {
+             lat: null, 
+             lng: null,
+             label: "Target"
+          }
+        }],
+        walgreens_marker:[
+         {
+          position: {
+             lat: null, 
+             lng: null,
+             label: "Walgreens"
+          }
+        }]
+
         }
     },
     components: {
         LoadingBar,
-        SearchResult
        // GoogleMaps,
     },
   
     methods: {
         ...mapActions([ ' setProduct ' ]),
         search(){
-
-            var product = require("./products.json");
-            console.log(product);
-            this.$store.dispatch('setProduct', product);
-
             if (this.latitude === null || this.latitude === null){
                 window.alert("Please choose a location!")
                 return
@@ -91,30 +144,28 @@ export default {
                     else
                         clearInterval(intval);
                 },30);
-            
-            // var data = {
-            //     "itemName": this.itemName,
-            //     "latitude": (this.latitude).toString(),
-            //     "longitude": (this.longitude).toString(),
-            // }
-            // axios({ method: "POST", url: "https://localhost:8080/handleSearch", data: data, headers: {"content-type": "application/json" } })
-            // .then((response) => {
+            var data = {
+                "itemName": this.itemName,
+                "latitude": (this.latitude).toString(),
+                "longitude": (this.longitude).toString(),
+            }
+            axios({ method: "POST", url: "https://localhost:8000/search", data: data, headers: {"content-type": "application/json" } })
+            .then((response) => {
                 
-            //     this.$router.push({name:'search-result', 
-            //                        params:{
-            //                            productName: this.itemName,
-            //                            latitude: this.latitude,
-            //                            longitude: this.longitude,
-            //                            button: 'Add'}});
-            //     const json = response.data;
-            //     this.$store.dispatch('setProduct',json);
+                this.$router.push({name:'search-result', 
+                                   params:{
+                                       productName: this.itemName,
+                                       latitude: this.latitude,
+                                       longitude: this.longitude,
+                                       button: 'Add'}});
+                const json = response.data;
+                this.$store.dispatch('setProduct',json);
                
-            //     console.log(response.data)
-                
-            // })
-            // .catch((error) => {
-            //     window.alert(`The API returned an error: ${error.data}`);
-            // })
+                console.log(response.data)
+            })
+            .catch((error) => {
+                window.alert(`The API returned an error: ${error.data}`);
+            })
             console.log(this.itemName,this.latitude,this.longitude)
         },
         async getLocation() {
@@ -145,7 +196,24 @@ export default {
             this.gettingLocation = false;
             this.errorStr = e.message;
         }
-        
+/*
+        var data = {
+            "latitude": this.latitude,
+            "longitude": this.longitude
+        }
+        axios({ method: "POST", url: "https://localhost:8000/getStore", data: data, headers: {"content-type": "application/json" } })
+            .then((response) => {
+                this.walmart_marker[0].position.lat = response.data.walmart.lat;
+                this.walmart_marker[0].position.lng = response.data.walmart.lng;
+                this.target_marker[0].position.lat = response.data.target.lat;
+                this.target_marker[0].position.lng = response.data.target.lng;
+                this.walgreens_marker[0].position.lat = response.data.walgreens.lat;
+                this.walgreens_marker[0].position.lng = response.data.walgreens.lng;
+            })
+            .catch((error) => {
+                window.alert(`The API returned an error: ${error.data}`);
+            })
+        */
         },
 
         getCoordinates(event){
@@ -155,6 +223,24 @@ export default {
             this.zoom = 10;
             this.marker[0].position.lat = this.latitude;
             this.marker[0].position.lng = this.longitude;
+        /*
+            var data = {
+            "latitude": this.latitude,
+            "longitude": this.longitude
+        }
+        axios({ method: "POST", url: "https://localhost:8000/getStore", data: data, headers: {"content-type": "application/json" } })
+            .then((response) => {
+                this.walmart_marker[0].position.lat = response.data.walmart.lat;
+                this.walmart_marker[0].position.lng = response.data.walmart.lng;
+                this.target_marker[0].position.lat = response.data.target.lat;
+                this.target_marker[0].position.lng = response.data.target.lng;
+                this.walgreens_marker[0].position.lat = response.data.walgreens.lat;
+                this.walgreens_marker[0].position.lng = response.data.walgreens.lng;
+            })
+            .catch((error) => {
+                window.alert(`The API returned an error: ${error.data}`);
+            })
+           */
         }
         
     }
@@ -172,6 +258,8 @@ export default {
   left:25%;
 }
 .sm{
+    position: relative;
+    top:10px;
     border: 0;
     cursor: pointer;
     box-sizing: border-box;
