@@ -1,25 +1,26 @@
 import requests
-import json
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
 from threading import Thread
+import os
+from dotenv import load_dotenv
 
+load_dotenv('../../.env')
+SERPAPI_KEY = os.getenv("SERPAPI_KEY")
 product_list = []
-serpApi_key = "d26f9f09f7f0571b2324bb6b095e9ee1f1e263889d8ae589bd30975dad5f56d0"
 option = webdriver.ChromeOptions()
 option.add_argument("--headless")
 option.add_argument("window-size=2560,1440")
 
 def get_walmart(product_name, option, latitude, longitude):
 
-    Walmart = requests.get("https://serpapi.com/search.json?engine=google_maps&q=walmart&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + serpApi_key)
+    Walmart = requests.get("https://serpapi.com/search.json?engine=google_maps&q=walmart&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + SERPAPI_KEY)
     Walmart = Walmart.json()
     Walmart_url = Walmart["local_results"][0]["website"]
     product_name = product_name.replace(" ","+")
     Walmart_url = Walmart_url.split("?")[0] + "/search?query=" + product_name
     Walmart_location = Walmart["local_results"][0]["gps_coordinates"]
-
     driver = webdriver.Chrome(executable_path="./chromedriver", options = option)
     driver.get(Walmart_url)
     button = driver.find_element_by_xpath('//*[@id="content"]/div[2]/section[2]/div[2]/div/div/div/div/div/div[2]/form/div/div[3]/button')
@@ -34,10 +35,10 @@ def get_walmart(product_name, option, latitude, longitude):
 
 def get_target(product_name, option, latitude, longitude):
 
-    Target = requests.get("https://serpapi.com/search.json?engine=google_maps&q=target&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + serpApi_key)
+    Target = requests.get("https://serpapi.com/search.json?engine=google_maps&q=target&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + SERPAPI_KEY)
     Target = Target.json()
     url = Target["local_results"][0]["place_id_search"]
-    page = requests.get(url+"&api_key="+serpApi_key)
+    page = requests.get(url+"&api_key="+SERPAPI_KEY)
     page = page.json()
     Target_url=page["place_results"]["website"]
     Target_location = Target["local_results"][0]["gps_coordinates"]
@@ -62,7 +63,7 @@ def get_target(product_name, option, latitude, longitude):
 
 def get_walgreens(product_name, option, latitude, longitude):
     
-    Walgreens = requests.get("https://serpapi.com/search.json?engine=google_maps&q=walgreens&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + serpApi_key)
+    Walgreens = requests.get("https://serpapi.com/search.json?engine=google_maps&q=walgreens&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + SERPAPI_KEY)
     Walgreens = Walgreens.json()
     Walgreens_url = Walgreens["local_results"][0]["website"]
     Walgreens_location = Walgreens["local_results"][0]["gps_coordinates"]

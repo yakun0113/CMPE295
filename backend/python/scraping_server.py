@@ -2,6 +2,12 @@ from scraper import scrape
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
 import json
+import os
+from dotenv import load_dotenv
+
+load_dotenv('../../.env')
+SCRAPING_PORT = os.getenv("SCRAPING_PORT")
+
 class S(BaseHTTPRequestHandler):
     def _set_response(self):
         self.send_response(200)
@@ -25,7 +31,9 @@ class S(BaseHTTPRequestHandler):
         product_data = product_data.encode('utf-8')
         self.wfile.write(product_data)
 
-def run(server_class=HTTPServer, handler_class=S, port=8000):
+def run(server_class=HTTPServer, handler_class=S, port=5000):
+    if SCRAPING_PORT != None:
+        port = int(SCRAPING_PORT)
     logging.basicConfig(level=logging.INFO)
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
@@ -38,12 +46,7 @@ def run(server_class=HTTPServer, handler_class=S, port=8000):
     logging.info('Stopping httpd...\n')
 
 if __name__ == '__main__':
-    from sys import argv
-
-    if len(argv) == 2:
-        run(port=int(argv[1]))
-    else:
-        run()
+    run()
 
 
 
