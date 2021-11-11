@@ -29,7 +29,6 @@ class S(BaseHTTPRequestHandler):
         self._set_response()
         product_data = json.dumps(product_data)
         product_data = product_data.encode('utf-8')
-        print(product_data)
         self.wfile.write(product_data)
 
 def run(server_class=HTTPServer, handler_class=S, port=5000):
