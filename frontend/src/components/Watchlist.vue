@@ -2,6 +2,7 @@
   <div class="container">
     <div class="search-wrapper">
         <h1>My watchlist</h1>
+        <h3 v-if="isEmpty"> No items in your watchlist</h3>
     </div>
    
     <div class = "parent">
@@ -46,9 +47,19 @@ export default {
         watchlistLength(){
             return this.watchlist.length
         },
+
+        isEmpty() {
+            if (this.watchlist.length === 0){
+                return true
+            }
+            else{
+                return false
+            }
+        }
     },
    
     methods: {
+
         scrollRight(){
             this.watchlist_index+=6;
            }

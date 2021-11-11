@@ -1,92 +1,134 @@
 import requests
-import json
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
 from threading import Thread
+import os
+from dotenv import load_dotenv
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
-product_list = []
-serpApi_key = "d26f9f09f7f0571b2324bb6b095e9ee1f1e263889d8ae589bd30975dad5f56d0"
+load_dotenv('../../.env')
+SERPAPI_KEY = os.getenv("SERPAPI_KEY")
 option = webdriver.ChromeOptions()
 option.add_argument("--headless")
 option.add_argument("window-size=2560,1440")
 
-def get_walmart(product_name, option, latitude, longitude):
+def get_walmart(product_name, option, latitude, longitude, product_list):
+    try:
+        Walmart = requests.get("https://serpapi.com/search.json?engine=google_maps&q=walmart&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + SERPAPI_KEY)
+        Walmart = Walmart.json()
+        Walmart_url = Walmart["local_results"][0]["website"]
+        product_name = product_name.replace(" ","+")
+        Walmart_url = Walmart_url.split("?")[0] + "/search?query=" + product_name
+        Walmart_location = Walmart["local_results"][0]["gps_coordinates"]
+        driver = webdriver.Chrome(executable_path="./chromedriver", options = option)
+        driver.get(Walmart_url)
+        try:
+            button = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content"]/div[2]/section[2]/div[2]/div/div[1]/div/div/div/div[2]/form/div/div[3]/button')))
+        except:
+            button = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content"]/div[2]/section[2]/div[2]/div/div/div/div/div/div[2]/form/div/div[3]/button')))
+        button.click()
+        WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content"]/div[2]/section[2]/div[2]/div/div[2]')))
+        for i in range(10):
+            driver.execute_script("window.scrollBy(0, document.body.scrollHeight/10)")
+            time.sleep(0.1)
+        walmart_soup = BeautifulSoup(driver.page_source, 'html.parser')
+        driver.quit()
+        scrape_walmart(walmart_soup, Walmart_location, product_list)
 
-    Walmart = requests.get("https://serpapi.com/search.json?engine=google_maps&q=walmart&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + serpApi_key)
-    Walmart = Walmart.json()
-    Walmart_url = Walmart["local_results"][0]["website"]
-    product_name = product_name.replace(" ","+")
-    Walmart_url = Walmart_url.split("?")[0] + "/search?query=" + product_name
-    Walmart_location = Walmart["local_results"][0]["gps_coordinates"]
 
-    driver = webdriver.Chrome(executable_path="./chromedriver", options = option)
-    driver.get(Walmart_url)
-    button = driver.find_element_by_xpath('//*[@id="content"]/div[2]/section[2]/div[2]/div/div/div/div/div/div[2]/form/div/div[3]/button')
-    button.click()
-    time.sleep(0.5)
-    for i in range(10):
-        driver.execute_script("window.scrollBy(0, document.body.scrollHeight/10)")
-        time.sleep(0.1)
-    walmart_soup = BeautifulSoup(driver.page_source, 'html.parser')
-    driver.quit()
-    scrape_walmart(walmart_soup, Walmart_location)
+    except:
+        store = {
+        "store": "Walmart",
+        "location": {
+            "latitude":None,
+            "longitude":None
+        },
+        "products": []
+    }
 
-def get_target(product_name, option, latitude, longitude):
+        product_list.append(store)
 
-    Target = requests.get("https://serpapi.com/search.json?engine=google_maps&q=target&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + serpApi_key)
-    Target = Target.json()
-    url = Target["local_results"][0]["place_id_search"]
-    page = requests.get(url+"&api_key="+serpApi_key)
-    page = page.json()
-    Target_url=page["place_results"]["website"]
-    Target_location = Target["local_results"][0]["gps_coordinates"]
+def get_target(product_name, option, latitude, longitude, product_list):
+    try:
+        Target = requests.get("https://serpapi.com/search.json?engine=google_maps&q=target&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + SERPAPI_KEY)
+        Target = Target.json()
+        url = Target["local_results"][0]["place_id_search"]
+        page = requests.get(url+"&api_key="+SERPAPI_KEY)
+        page = page.json()
+        Target_url=page["place_results"]["website"]
+        Target_location = Target["local_results"][0]["gps_coordinates"]
+        driver = webdriver.Chrome(executable_path="./chromedriver", options = option)
+        driver.get(Target_url)
+        driver.execute_script("window.scrollBy(0, document.body.scrollHeight/5)")
+        try:
+            button = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div[4]/div[1]/div[1]/div[2]/div/div[5]/button[2]')))
+        except:
+            button = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div[5]/div[1]/div[1]/div[2]/div/div[5]/button[2]')))
+        button.click()
+        product_name = product_name.replace(" ","+")
+        driver.get("https://www.target.com/s?searchTerm="+product_name+"&facetedValue=5zkty")
+        for i in range(15):
+            driver.execute_script("window.scrollBy(0, document.body.scrollHeight/15)")
+            time.sleep(0.1)
+        target_soup = BeautifulSoup(driver.page_source, 'html.parser')
+        driver.quit()
+        scrape_target(target_soup, Target_location, product_list)
 
-    driver = webdriver.Chrome(executable_path="./chromedriver", options = option)
-    driver.get(Target_url)
-    driver.execute_script("window.scrollBy(0, document.body.scrollHeight/5)")
-    time.sleep(1)
-    button = driver.find_element_by_xpath("//*[@id='__next']/div[3]/div/div[1]/div[2]/div/div[5]/button[2]")
-    button.click()
-    product_name = product_name.replace(" ","+")
-    driver.get("https://www.target.com/s?searchTerm="+product_name+"&facetedValue=5zkty")
-    time.sleep(1)
+    except:
+        store = {
+        "store": "Target",
+        "location": {
+            "latitude":None,
+            "longitude":None
+        },
+        "products": []
+    }
 
-    for i in range(15):
-        driver.execute_script("window.scrollBy(0, document.body.scrollHeight/15)")
-        time.sleep(0.1)
+        product_list.append(store)
 
-    target_soup = BeautifulSoup(driver.page_source, 'html.parser')
-    driver.quit()
-    scrape_target(target_soup, Target_location)
-
-def get_walgreens(product_name, option, latitude, longitude):
+def get_walgreens(product_name, option, latitude, longitude, product_list):
+    try:
+        Walgreens = requests.get("https://serpapi.com/search.json?engine=google_maps&q=walgreens&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + SERPAPI_KEY)
+        Walgreens = Walgreens.json()
+        Walgreens_url = Walgreens["local_results"][0]["website"]
+        Walgreens_location = Walgreens["local_results"][0]["gps_coordinates"]
     
-    Walgreens = requests.get("https://serpapi.com/search.json?engine=google_maps&q=walgreens&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + serpApi_key)
-    Walgreens = Walgreens.json()
-    Walgreens_url = Walgreens["local_results"][0]["website"]
-    Walgreens_location = Walgreens["local_results"][0]["gps_coordinates"]
-    
-    driver = webdriver.Chrome(executable_path="./chromedriver", options = option)
-    driver.get(Walgreens_url) 
-    search = driver.find_element_by_xpath('//*[@id="shop-placeholder"]')
-    search.send_keys(product_name)
-    button = driver.find_element_by_xpath('//*[@id="storeServiceDiv"]/div[1]/div[1]/div[3]/div/div/button')
-    button.click()
-    time.sleep(1)
-    pickUp = driver.find_element_by_xpath('//*[@id="IN_STORES"]')
-    pickUp.click()
-    time.sleep(1)
+        driver = webdriver.Chrome(executable_path="./chromedriver", options = option)
+        driver.get(Walgreens_url) 
+        driver.execute_script("window.scrollBy(0, document.body.scrollHeight/5)")
 
-    for i in range(15):
-        driver.execute_script("window.scrollBy(0, document.body.scrollHeight/15)")
-        time.sleep(0.1)
+        search = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="shop-placeholder"]')))
+        search.send_keys(product_name)
+        button = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="storeServiceDiv"]/div[1]/div[1]/div[3]/div/div/button')))
+        button.click()
+        inStore = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="IN_STORES"]')))
+        inStore.click()
+        WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="wag-cursor-pointer_sub_category-Pickup"]/div/label/span[2]/span')))
+        
+        for i in range(15):
+            driver.execute_script("window.scrollBy(0, document.body.scrollHeight/15)")
+            time.sleep(0.1)
 
-    walgreens_soup = BeautifulSoup(driver.page_source, 'html.parser')
-    driver.quit()
-    scrape_walgreens(walgreens_soup, Walgreens_location)
+        walgreens_soup = BeautifulSoup(driver.page_source, 'html.parser')
+        driver.quit()
+        scrape_walgreens(walgreens_soup, Walgreens_location, product_list)
 
-def scrape_walmart(soup, Walmart_location):
+    except:
+        store = {
+        "store": "Walgreens",
+        "location": {
+            "latitude":None,
+            "longitude":None
+        },
+        "products": []
+    }
+
+        product_list.append(store)
+
+def scrape_walmart(soup, Walmart_location, product_list):
 
     p_list = []
     productId = 0
@@ -145,7 +187,7 @@ def scrape_walmart(soup, Walmart_location):
 
     product_list.append(store)
     
-def scrape_target(soup, Target_location):
+def scrape_target(soup, Target_location, product_list):
 
     p_list = []
     productId = 100
@@ -194,7 +236,7 @@ def scrape_target(soup, Target_location):
 
     product_list.append(store)
 
-def scrape_walgreens(soup, Walgreens_location):
+def scrape_walgreens(soup, Walgreens_location, product_list):
 
     p_list = []
     productId = 200
@@ -205,7 +247,7 @@ def scrape_walgreens(soup, Walgreens_location):
         productName = result.select_one('div[name="product-title"]').text
         productPrice = result.select_one('div[class="product__price-contain"] span span span')
         productRating = result.select_one('span[class="product__rating"] figure img')
-        productStatus = result.select_one('div[class="avail-cta"] strong')
+        productStatus = result.select_one('div[class="avail-cta "] strong')
         productLink = result.select_one('div[class="product__text"] a')["href"]
         productLink = "https://www.walgreens.com"+productLink
 
@@ -222,7 +264,19 @@ def scrape_walgreens(soup, Walgreens_location):
             continue
         else:
             productImage = "https:" + productImage['src']
+          
+        product = {
+                "id": productId,
+                "image": productImage,
+                "name": productName,
+                "price": productPrice,      
+                "rating": productRating,
+                "link": productLink
+                } 
 
+        p_list.append(product)    
+        productId += 1
+        
         if productStatus is not None :
             product = {
                 "id": productId,
@@ -248,8 +302,10 @@ def scrape_walgreens(soup, Walgreens_location):
     product_list.append(store)
 
 def scrape(product_name, latitude, longitude):
+    
+    product_list = []
 
-    args = (product_name, option, latitude, longitude)
+    args = (product_name, option, latitude, longitude, product_list)
     
     t1 = Thread(target=get_walmart, args= args)
     t2 = Thread(target=get_target, args= args)

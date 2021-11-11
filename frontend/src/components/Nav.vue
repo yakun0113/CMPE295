@@ -51,15 +51,15 @@ export default {
     },
 
     watchlist(){
-      axios({ method: "GET", url: "https://localhost:8080/handleWatchlist/"+ this.getUser})
+      axios({ method: "GET", url: "https://localhost:8000/users/watchlist/"+ this.getUser.user_id, headers: {"content-type": "application/json", "token": this.getUser.token}})
             .then((response) => {
-                const json = response.data.result;
+                const json = response.data;
                 this.$store.dispatch('setWatchlist',json);
                 this.$router.push({name:'watchlist', params:{button:'Delete'}});
 
             })
             .catch((error) => {
-                window.alert(`The API returned an error: ${error.data}`);
+                  window.alert(error.response.data.error);
             })
     },
 

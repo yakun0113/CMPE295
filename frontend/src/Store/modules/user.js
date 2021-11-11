@@ -1,15 +1,15 @@
 const state = {	
     isLoggedin: false,
-    currentUser: "",
+    currentUser: null,
     watchlist:[],
     inWatchlist:false,
 }
 
 const mutations = {
 
-	'SIGN_IN' (state, userEmail) {
+	'SIGN_IN' (state, user) {
 		state.isLoggedin = true;
-        state.currentUser = userEmail;
+        state.currentUser = user;
 
 	},
 
@@ -25,8 +25,8 @@ const mutations = {
 }
 
 const actions = {
-    signIn({commit},userEmail){
-        commit('SIGN_IN',userEmail)
+    signIn({commit},user){
+        commit('SIGN_IN',user)
     },
 
     signOut({commit}){
