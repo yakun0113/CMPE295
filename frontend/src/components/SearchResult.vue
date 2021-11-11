@@ -8,15 +8,40 @@
         <div class="dropdown">
             <unicon name="filter"></unicon>
             <div class="dropdown-content">
-                <div class="sort"><unicon name="sort-amount-down"></unicon><p>Price low to high</p></div>
-                <div class="sort"><unicon name="sort-amount-up"></unicon><p>Price high to low</p></div>
+                <div class="sort"><unicon name="sort-amount-down"></unicon><br>
+                    <Button v-if="!isSortByPrice" @click="priceSort">Price low to high</Button>
+                    <Button v-else @click="priceSort">Clear price filter</Button>
+                </div>
+
+                <div class="sort"><unicon name="sort-amount-up"></unicon><br>
+                    <Button v-if="!isSortByRating" @click="ratingSort">Rating high to low</Button>
+                    <Button v-else @click="ratingSort">Clear rating filter</Button>
+                </div>
             </div>
         </div>
     </div>
    
     <h1 class="wmr"><img src='../assets/walmart.jpg'  width="50" height="50" class="image"/>Walmart</h1>    
     <div class = "parent">
-        <div class="test-cards-container">
+        <div v-if="isSortByPrice" class="test-cards-container">
+            <ProductItem 
+                v-for="item in priceSortWalmart"
+                v-bind:href="item.name"
+                :key="item.id"
+                :item="item" 
+                :button="button"
+            />
+        </div>
+        <div v-else-if="isSortByRating" class="test-cards-container">
+            <ProductItem 
+                v-for="item in ratingSortWalmart"
+                v-bind:href="item.name"
+                :key="item.id"
+                :item="item" 
+                :button="button"
+            />
+        </div>
+        <div v-else class="test-cards-container">
             <ProductItem 
                 v-for="item in walmartList"
                 v-bind:href="item.name"
@@ -32,8 +57,25 @@
 
     <h1 class="tgt"><img src='../assets/target.jpg'  width="50" height="50" class="image"/>Target</h1>   
     <div class = "parent">
-        
-        <div class="test-cards-container">
+        <div v-if="isSortByPrice" class="test-cards-container">
+            <ProductItem 
+                v-for="item in priceSortTarget"
+                v-bind:href="item.name"
+                :key="item.id"
+                :item="item"   
+                :button="button" 
+           />
+        </div>
+        <div v-else-if="isSortByRating" class="test-cards-container">
+            <ProductItem 
+                v-for="item in ratingSortTarget"
+                v-bind:href="item.name"
+                :key="item.id"
+                :item="item"   
+                :button="button" 
+           />
+        </div>
+        <div v-else class="test-cards-container">
             <ProductItem 
                 v-for="item in targetList"
                 v-bind:href="item.name"
@@ -44,23 +86,40 @@
         </div>
     </div>
     <unicon class="angle-left-b" @click.stop = "scrollLeft('tleft')" v-if="target_index >= 0" name="angle-double-left" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
-    <unicon class="angle-right-b" @click.stop = "scrollRight('tright')" v-if="target_index + 6 <= targetLength-1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
+    <unicon class="angle-right-b" @click.stop = "scrollRight('tright')" v-if="target_index + 6 <= targetLength+1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
     <h1 class="wgr"><img src='../assets/walgreens.jpg' width="50" height="50" class="image"/>Walgreens</h1>
     <div class = "parent">    
-        <div class="test-cards-container">
+        <div v-if="isSortByPrice" class="test-cards-container">
+            <ProductItem 
+                v-for="item in priceSortWalgreens"
+                v-bind:href="item.name"
+                :key="item.id"
+                :item="item" 
+                :button="button"  
+            />
+        </div>
+        <div v-else-if="isSortByRating" class="test-cards-container">
+            <ProductItem 
+                v-for="item in ratingSortWalgreens"
+                v-bind:href="item.name"
+                :key="item.id"
+                :item="item" 
+                :button="button"  
+            />
+        </div>
+        <div v-else class="test-cards-container">
             <ProductItem 
                 v-for="item in walgreensList"
                 v-bind:href="item.name"
                 :key="item.id"
                 :item="item" 
                 :button="button"  
-  
             />
         </div>
     </div>
      
     <unicon class="angle-left-b" @click.stop = "scrollLeft('gleft')" v-if="walgreens_index >= 0" name="angle-double-left" height="40px" width="40px"  fill="black" hover-fill="limegreen"></unicon>
-    <unicon class="angle-right-b" @click.stop = "scrollRight('gright')" v-if="walgreens_index + 6 <= walgreensLength-1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
+    <unicon class="angle-right-b" @click.stop = "scrollRight('gright')" v-if="walgreens_index + 6 < walgreensLength+1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
     
   </div>
 </template>
@@ -69,6 +128,7 @@
 import ProductItem from './product/ProductItem.vue'
 import GoogleMaps from './GoogleMaps.vue'
 import { mapGetters } from 'vuex'
+import Button from './Button.vue'
 export default {
     name: "search-result",
     data(){
@@ -76,16 +136,18 @@ export default {
         walmart_index: 0,
         target_index: 0,
         walgreens_index: 0,
-
+        isSortByPrice: false,
+        isSortByRating: false,
         }
     },
     props:['productName','latitude', 'longitude','button'],
     components: {
         ProductItem,
-        GoogleMaps
+        GoogleMaps,
+        Button
     },
     computed: {
-        ...mapGetters(['walmart', 'target', 'walgreens',
+        ...mapGetters(['walmart', 'target', 'walgreens', 'walmart_sort_by_price', 'target_sort_by_price', 'walgreens_sort_by_price','walmart_sort_by_rating','target_sort_by_rating','walgreens_sort_by_rating',
                        'store_locations']),
         walmartList() {
             return this.walmart.slice(this.walmart_index, this.walmart_index + 6)
@@ -95,6 +157,24 @@ export default {
         },
         walgreensList() {
             return this.walgreens.slice(this.walgreens_index, this.walgreens_index+6)
+        },
+        priceSortWalmart() {
+            return this.walmart_sort_by_price.slice(this.walmart_index, this.walmart_index + 6)
+        },
+        priceSortTarget(){
+            return this.target_sort_by_price.slice(this.walmart_index, this.walmart_index + 6)
+        },
+        priceSortWalgreens(){
+            return this.walgreens_sort_by_price.slice(this.walmart_index, this.walmart_index + 6)
+        },
+        ratingSortWalmart(){
+            return this.walmart_sort_by_rating.slice(this.walmart_index, this.walmart_index + 6)
+        },
+        ratingSortTarget(){
+            return this.target_sort_by_rating.slice(this.walmart_index, this.walmart_index + 6)
+        },
+        ratingSortWalgreens(){
+            return this.walgreens_sort_by_rating.slice(this.walmart_index, this.walmart_index + 6)
         },
         walmartLength(){
             return this.walmart.length
@@ -112,6 +192,18 @@ export default {
     },
    
     methods: {
+        priceSort(){
+            this.walmart_index = 0
+            this.target_index = 0
+            this.walgreens_index = 0
+            this.isSortByPrice=!this.isSortByPrice
+        },
+        ratingSort(){
+            this.walmart_index = 0
+            this.target_index = 0
+            this.walgreens_index = 0
+            this.isSortByRating=!this.isSortByRating
+        },
         scrollRight(id){
            switch (id){
                case "wright":
@@ -126,7 +218,6 @@ export default {
 
         },
         scrollLeft(id){
-
             switch (id){
                case "wleft":
                    if(this.walmart_index >= 6){
@@ -145,7 +236,8 @@ export default {
                    }
            }
 
-        }
+        },
+   
     }
     
 }
@@ -167,6 +259,7 @@ export default {
   position: absolute;
   background-color: #f9f9f9;
   min-width: 200px;
+  height: 110px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   border-radius: 5px;
   z-index: 1;
@@ -174,7 +267,7 @@ export default {
 .sort:hover{
     background-color:rgb(66, 161, 106);
     width: 200px;
-    height:75px;
+    height:55px;
     border-radius: 5px;
 
     color:white;

@@ -46,7 +46,36 @@ const getters = {
     walgreens: (state) => {
         return state.walgreensList;
     },
-
+	walmart_sort_by_price: () => {
+		let sortedList = state.walmartList
+		sortedList.sort((a, b) => (a.price.substring(1)-'0' > b.price.substring(1)-'0') ? 1 : -1)
+		return sortedList
+	},
+	target_sort_by_price: () => {
+		let sortedList = state.targetList
+		sortedList.sort((a, b) => (a.price.substring(1)-'0' > b.price.substring(1)-'0') ? 1 : -1)
+		return sortedList
+	},
+	walgreens_sort_by_price: () => {
+		let sortedList = state.walgreensList
+		sortedList.sort((a, b) => (a.price.substring(1)-'0' > b.price.substring(1)-'0') ? 1 : -1)
+		return sortedList
+	},
+	walmart_sort_by_rating: () => {
+		let sortedList = state.walmartList
+		sortedList.sort((a, b) => (a.rating.substring(0,3)-'0' < b.rating.substring(0,3)-'0') ? 1 : -1)
+		return sortedList
+	},
+	target_sort_by_rating: () => {
+		let sortedList = state.targetList
+		sortedList.sort((a, b) => (a.rating.substring(0,3)-'0' < b.rating.substring(0,3)-'0') ? 1 : -1)
+		return sortedList
+	},
+	walgreens_sort_by_rating: () => {
+		let sortedList = state.walgreensList
+		sortedList.sort((a, b) => (a.rating.substring(0,3)-'0' < b.rating.substring(0,3)-'0') ? 1 : -1)
+		return sortedList
+	},
 	store_locations: (state) => {
 		return state.storeLocations;
 	},
