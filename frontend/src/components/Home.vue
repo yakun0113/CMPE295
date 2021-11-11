@@ -143,23 +143,39 @@ export default {
                        
                     else
                         clearInterval(intval);
-                },30);
+                },25);
+            /*
+            var storeLocations = {
+                "WalmartLat": this.walmart_marker[0].position.lat,
+                "WalmrtLng": this.walmart_marker[0].position.lng,
+                "TargetLat": this.target_marker[0].position.lat,
+                "TargetLng": this.target_marker[0].position.lng,
+                "WalgreensLat": this.walgreens_marker[0].position.lat,
+                "WalgreensLng": this.walgreens_marker[0].position.lng,
+
+            }
             var data = {
                 "itemName": this.itemName,
+                "storeLocations": storeLocations,
+    
+            }*/
+
+            var data = {
+               "itemName": this.itemName,
                 "latitude": (this.latitude).toString(),
                 "longitude": (this.longitude).toString(),
             }
             axios({ method: "POST", url: "https://localhost:8000/search", data: data, headers: {"content-type": "application/json" } })
             .then((response) => {
                 
+                const json = response.data;
+                this.$store.dispatch('setProduct',json);
                 this.$router.push({name:'search-result', 
                                    params:{
                                        productName: this.itemName,
                                        latitude: this.latitude,
                                        longitude: this.longitude,
                                        button: 'Add'}});
-                const json = response.data;
-                this.$store.dispatch('setProduct',json);
                
                 console.log(response.data)
             })
