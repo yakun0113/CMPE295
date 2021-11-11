@@ -23,12 +23,13 @@ class S(BaseHTTPRequestHandler):
         latitude = post_data["latitude"]
         longitude = post_data["longitude"]
         #product_data = scrape(product_name, latitude, longitude)
-        #product_data = scrape(product_name, "37.3382", "-121.8863")
-        file = open("products.json",'r')
-        product_data = file.read()
+        product_data = scrape(product_name, "37.3382", "-121.8863")
+        #file = open("products.json",'r')
+        #product_data = file.read()
         self._set_response()
-        #product_data = json.dumps(product_data)
+        product_data = json.dumps(product_data)
         product_data = product_data.encode('utf-8')
+        print(product_data)
         self.wfile.write(product_data)
 
 def run(server_class=HTTPServer, handler_class=S, port=5000):
