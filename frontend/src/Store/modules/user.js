@@ -1,6 +1,6 @@
 const state = {	
     isLoggedin: false,
-    currentUser: null,
+    currentUser: null,  
     watchlist:[],
     inWatchlist:false,
 }

@@ -18,13 +18,13 @@ const state = {
 const mutations = {
 
 	'SET_PRODUCTS' (state, products) {
-		state.walmartList = products[0].products;
-        state.targetList = products[1].products;
-        state.walgreensList = products[2].products;
+		state.walmartList = products.find(function(o){ return o.store=="Walmart"}).products;
+        state.targetList = products.find(function(o){ return o.store=="Target"}).products;
+        state.walgreensList = products.find(function(o){ return o.store=="Walgreens"}).products;
 	
-		state.storeLocations['walmart'] = products[0].location;
-		state.storeLocations['target'] = products[1].location;
-		state.storeLocations['walgreens'] = products[2].location;
+		state.storeLocations['walmart'] = products.find(function(o){ return o.store=="Walmart"}).location;
+		state.storeLocations['target'] = products.find(function(o){ return o.store=="Target"}).location;
+		state.storeLocations['walgreens'] = products.find(function(o){ return o.store=="Walgreens"}).location;
 	},
 }
 
@@ -44,6 +44,11 @@ const getters = {
     walgreens: (state) => {
         return state.walgreensList;
     },
+
+	store_locations: (state) => {
+		return state.storeLocations;
+	},
+
 	walmart_sort_by_price: () => {
 		let sortedList = state.walmartList
 		sortedList.sort((a, b) => (a.price.substring(1)-'0' > b.price.substring(1)-'0') ? 1 : -1)
@@ -73,9 +78,6 @@ const getters = {
 		let sortedList = state.walgreensList
 		sortedList.sort((a, b) => (a.rating.substring(0,3)-'0' < b.rating.substring(0,3)-'0') ? 1 : -1)
 		return sortedList
-	},
-	store_locations: (state) => {
-		return state.storeLocations;
 	},
 }
 
