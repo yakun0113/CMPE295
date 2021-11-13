@@ -8,15 +8,19 @@
         <div class="dropdown">
             <unicon name="filter"></unicon>
             <div class="dropdown-content">
-                <div class="sort"><unicon name="sort-amount-down"></unicon><br>
-                    <Button v-if="!isSortByPrice" @click="priceSort">Price low to high</Button>
-                    <Button v-else @click="priceSort">Clear price filter</Button>
+                <div class="sort" @click="priceSort">
+                    <unicon name="sort-amount-up"></unicon>
+                    <h5>Price low to high</h5>
+                </div>
+                <div class="sort" @click="ratingSort">
+                    <unicon name="sort-amount-down"></unicon>
+                    <h5>Rating high to low</h5>
+                </div>
+                <div class="sort" @click="noSort">
+                    <unicon name="bars"></unicon>
+                    <h5>No filter</h5>
                 </div>
 
-                <div class="sort"><unicon name="sort-amount-up"></unicon><br>
-                    <Button v-if="!isSortByRating" @click="ratingSort">Rating high to low</Button>
-                    <Button v-else @click="ratingSort">Clear rating filter</Button>
-                </div>
             </div>
         </div>
     </div>
@@ -52,7 +56,7 @@
             />
         </div>
     </div>
-    <unicon  class="angle-left-b" @click.stop = "scrollLeft('wleft')" v-if="walmart_index >= 0 && walmartLength != 0" name="angle-double-left" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
+    <unicon  class="angle-left-b" @click.stop = "scrollLeft('wleft')" v-if="walmart_index > 0 && walmartLength != 0" name="angle-double-left" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
     <unicon  class="angle-right-b" @click.stop = "scrollRight('wright')" v-if="walmart_index + 6 <= walmartLength-1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
 
 
@@ -87,7 +91,7 @@
            />
         </div>
     </div>
-    <unicon class="angle-left-b" @click.stop = "scrollLeft('tleft')" v-if="target_index >= 0" name="angle-double-left" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
+    <unicon class="angle-left-b" @click.stop = "scrollLeft('tleft')" v-if="target_index > 0" name="angle-double-left" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
     <unicon class="angle-right-b" @click.stop = "scrollRight('tright')" v-if="target_index + 6 <= targetLength+1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
     <h1 class="wgr"><img src='../assets/walgreens.jpg' width="50" height="50" class="image"/>Walgreens</h1>
     <div class = "parent">    
@@ -120,7 +124,7 @@
         </div>
     </div>
      
-    <unicon class="angle-left-b" @click.stop = "scrollLeft('gleft')" v-if="walgreens_index >= 0" name="angle-double-left" height="40px" width="40px"  fill="black" hover-fill="limegreen"></unicon>
+    <unicon class="angle-left-b" @click.stop = "scrollLeft('gleft')" v-if="walgreens_index > 0" name="angle-double-left" height="40px" width="40px"  fill="black" hover-fill="limegreen"></unicon>
     <unicon class="angle-right-b" @click.stop = "scrollRight('gright')" v-if="walgreens_index + 6 < walgreensLength+1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
     
   </div>
@@ -130,7 +134,7 @@
 import ProductItem from './product/ProductItem.vue'
 import GoogleMaps from './GoogleMaps.vue'
 import { mapGetters } from 'vuex'
-import Button from './Button.vue'
+//import Button from './Button.vue'
 export default {
     name: "search-result",
     data(){
@@ -140,15 +144,14 @@ export default {
         walgreens_index: 0,
         isSortByPrice: false,
         isSortByRating: false,
-        sortBy: "",
-        sortDirection: "",
         }
     },
     props:['productName','latitude', 'longitude','button'],
     components: {
         ProductItem,
         GoogleMaps,
-        Button
+        
+        //Button
     },
     computed: {
         ...mapGetters(['walmart', 'target', 'walgreens', 'walmart_sort_by_price', 'target_sort_by_price', 'walgreens_sort_by_price','walmart_sort_by_rating','target_sort_by_rating','walgreens_sort_by_rating',
@@ -166,19 +169,19 @@ export default {
             return this.walmart_sort_by_price.slice(this.walmart_index, this.walmart_index + 6)
         },
         priceSortTarget(){
-            return this.target_sort_by_price.slice(this.walmart_index, this.walmart_index + 6)
+            return this.target_sort_by_price.slice(this.target_index, this.target_index + 6)
         },
         priceSortWalgreens(){
-            return this.walgreens_sort_by_price.slice(this.walmart_index, this.walmart_index + 6)
+            return this.walgreens_sort_by_price.slice(this.walgreens_index, this.walgreens_index + 6)
         },
         ratingSortWalmart(){
             return this.walmart_sort_by_rating.slice(this.walmart_index, this.walmart_index + 6)
         },
         ratingSortTarget(){
-            return this.target_sort_by_rating.slice(this.walmart_index, this.walmart_index + 6)
+            return this.target_sort_by_rating.slice(this.target_index, this.target_index + 6)
         },
         ratingSortWalgreens(){
-            return this.walgreens_sort_by_rating.slice(this.walmart_index, this.walmart_index + 6)
+            return this.walgreens_sort_by_rating.slice(this.walgreens_index, this.walgreens_index + 6)
         },
         walmartLength(){
             return this.walmart.length
@@ -195,17 +198,29 @@ export default {
     },
    
     methods: {
+        noSort(){
+            this.walmart_index = 0
+            this.target_index = 0
+            this.walgreens_index = 0
+            this.isSortByRating = false
+            this.isSortByPrice = false
+        },
+
         priceSort(){
             this.walmart_index = 0
             this.target_index = 0
             this.walgreens_index = 0
-            this.isSortByPrice=!this.isSortByPrice
+            this.isSortByPrice=true
+            this.isSortByRating = false
+
         },
         ratingSort(){
             this.walmart_index = 0
             this.target_index = 0
             this.walgreens_index = 0
-            this.isSortByRating=!this.isSortByRating
+            this.isSortByRating=true
+            this.isSortByPrice=false
+
         },
         scrollRight(id){
            switch (id){
@@ -236,13 +251,11 @@ export default {
                         this.walgreens_index-=6;
                    }
            }
-
         },
    
         }
     }
     
-
 </script>
 
 <style lang="scss" scoped>
@@ -253,21 +266,22 @@ export default {
   position: relative;
   display: inline-block;
   margin-left: 900px;
+
 }
 .dropdown-content {
   display: none;
   position: absolute;
   background-color: #f9f9f9;
   min-width: 200px;
-  height: 110px;
+  height: 270px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   border-radius: 5px;
-  z-index: 1;
+  z-index: 2;
 }
 .sort:hover{
     background-color:rgb(66, 161, 106);
     width: 200px;
-    height:55px;
+    height:90px;
     border-radius: 5px;
     color:white;
 }
@@ -334,8 +348,5 @@ export default {
       left:25%;
   }
 
-  h3{
-      text-align: center;
-  }
  
 </style>
