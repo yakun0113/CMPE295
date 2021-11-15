@@ -22,6 +22,7 @@ type SearchPost struct {
 
 type SearchResults struct {
 	Store    string    `json:"store"`
+	Website  string    `json:"website"`
 	Location Location  `json:"location"`
 	Products []Product `json:"products"`
 }
