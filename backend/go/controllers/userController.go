@@ -136,16 +136,19 @@ func Logout() gin.HandlerFunc {
 
 func GetUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userId := c.Param("user_id")
-
-		if err := helpers.MatchUserTypeToUid(c, userId); err != nil {
+		user_id := c.Param("user_id")
+		token_user_id := c.MustGet("uid")
+		if user_id != token_user_id {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Hacker detected!"})
+		}
+		if err := helpers.MatchUserTypeToUid(c, user_id); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 
 		var user models.User
-		err := userCollection.FindOne(ctx, bson.M{"user_id": userId}).Decode(&user)
+		err := userCollection.FindOne(ctx, bson.M{"user_id": user_id}).Decode(&user)
 		defer cancel()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -159,8 +162,12 @@ func DeleteUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
-		userId := c.Param("user_id")
-		result, err := userCollection.DeleteOne(ctx, bson.M{"user_id": userId})
+		user_id := c.Param("user_id")
+		token_user_id := c.MustGet("uid")
+		if user_id != token_user_id {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Hacker detected!"})
+		}
+		result, err := userCollection.DeleteOne(ctx, bson.M{"user_id": user_id})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -175,7 +182,11 @@ func UpdateUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
-		userId := c.Param("user_id")
+		user_id := c.Param("user_id")
+		token_user_id := c.MustGet("uid")
+		if user_id != token_user_id {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Hacker detected!"})
+		}
 		var updateUser models.UpdateUser
 		var foundUser models.User
 		if err := c.BindJSON(&updateUser); err != nil {
@@ -183,7 +194,7 @@ func UpdateUser() gin.HandlerFunc {
 			return
 		}
 
-		err := userCollection.FindOne(ctx, bson.M{"user_id": userId}).Decode(&foundUser)
+		err := userCollection.FindOne(ctx, bson.M{"user_id": user_id}).Decode(&foundUser)
 		defer cancel()
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Please try again!"})
@@ -201,7 +212,7 @@ func UpdateUser() gin.HandlerFunc {
 			newPassword := helpers.HashPassword(updateUser.NewPassword)
 			result, err := userCollection.UpdateOne(
 				ctx,
-				bson.M{"user_id": userId},
+				bson.M{"user_id": user_id},
 				bson.M{"$set": bson.M{"password": newPassword, "name": updateUser.NewName}})
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Please try again!"})
@@ -212,7 +223,7 @@ func UpdateUser() gin.HandlerFunc {
 		} else {
 			result, err := userCollection.UpdateOne(
 				ctx,
-				bson.M{"user_id": userId},
+				bson.M{"user_id": user_id},
 				bson.M{"$set": bson.M{"name": updateUser.NewName}})
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Please try again!"})
