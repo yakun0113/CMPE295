@@ -17,8 +17,8 @@ type User struct {
 
 type User struct {
 	ID            primitive.ObjectID `bson:"_id"`
-	Name          string             `json:"name" bson:"name" validate:"required,min=2,max=100"`
-	Password      string             `json:"password" bson:"password" validate:"required,min=6"`
+	Name          string             `json:"name" bson:"name" validate:"required"`
+	Password      string             `json:"password" bson:"password" validate:"required"`
 	Email         string             `json:"email" bson:"email" validate:"email,required"`
 	Watchlist     []WatchlistItem    `json:"watchlist" bson:"watchlist"`
 	Token         string             `json:"token" bson:"token"`
