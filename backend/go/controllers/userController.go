@@ -118,7 +118,19 @@ func Login() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+
+		c.SetCookie("token", token, 3600, "/", "localhost", false, true)
+		c.SetCookie("login", "true", 3600, "/", "localhost", false, false)
 		c.JSON(http.StatusOK, foundUser)
+	}
+}
+
+func Logout() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.SetCookie("token", "", 3600, "/", "localhost", false, true)
+		c.SetCookie("login", "false", 3600, "/", "localhost", false, false)
+
+		c.JSON(http.StatusOK, gin.H{"message": "Signed out successfully!"})
 	}
 }
 
