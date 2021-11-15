@@ -3,7 +3,7 @@
     <div class="search-wrapper">
         <GoogleMaps class = "map" 
                     :latitude="latitude" :longitude="longitude" 
-                    :storeLocations="storeLocations"/>
+                    :storeLocations="storeLocations" :storeLinks="storeLinks"/>
         <h1>Results for {{productName}}</h1>
         <div class="dropdown">
             <unicon name="filter"></unicon>
@@ -25,7 +25,8 @@
         </div>
     </div>
    
-    <h1 class="wmr"><img src='../assets/walmart.jpg'  width="50" height="50" class="image"/>Walmart</h1>    
+    <h1 class="wmr">
+        <img src='../assets/walmart.jpg' width="50" height="50" class="image"/>Walmart</h1>    
     <h3 v-if="walmartLength === 0">No results for Walmart</h3>
     <div class = "parent">
         <div v-if="isSortByPrice" class="test-cards-container">
@@ -60,7 +61,7 @@
     <unicon  class="angle-right-b" @click.stop = "scrollRight('wright')" v-if="walmart_index + 6 <= walmartLength-1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
 
 
-    <h1 class="tgt"><img src='../assets/target.jpg'  width="50" height="50" class="image"/>Target</h1>   
+    <h1 class="tgt"><img src='../assets/target.jpg' width="50" height="50" class="image"/>Target</h1>   
     <h3 v-if="targetLength === 0">No results for Target</h3>
     <div class = "parent">
         <div v-if="isSortByPrice" class="test-cards-container">
@@ -93,6 +94,7 @@
     </div>
     <unicon class="angle-left-b" @click.stop = "scrollLeft('tleft')" v-if="target_index > 0" name="angle-double-left" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
     <unicon class="angle-right-b" @click.stop = "scrollRight('tright')" v-if="target_index + 6 <= targetLength+1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
+
     <h1 class="wgr"><img src='../assets/walgreens.jpg' width="50" height="50" class="image"/>Walgreens</h1>
     <div class = "parent">    
         <div v-if="isSortByPrice" class="test-cards-container">
@@ -155,7 +157,7 @@ export default {
     },
     computed: {
         ...mapGetters(['walmart', 'target', 'walgreens', 'walmart_sort_by_price', 'target_sort_by_price', 'walgreens_sort_by_price','walmart_sort_by_rating','target_sort_by_rating','walgreens_sort_by_rating',
-                       'store_locations']),
+                       'store_locations','store_links']),
         walmartList() {
             return this.walmart.slice(this.walmart_index, this.walmart_index + 6)
         },
@@ -194,6 +196,9 @@ export default {
         },
         storeLocations() {
             return this.store_locations
+        },
+        storeLinks(){
+            return this.store_links
         }
     },
    
@@ -204,6 +209,8 @@ export default {
             this.walgreens_index = 0
             this.isSortByRating = false
             this.isSortByPrice = false
+         
+
         },
 
         priceSort(){
@@ -212,6 +219,7 @@ export default {
             this.walgreens_index = 0
             this.isSortByPrice=true
             this.isSortByRating = false
+           
 
         },
         ratingSort(){
@@ -220,6 +228,7 @@ export default {
             this.walgreens_index = 0
             this.isSortByRating=true
             this.isSortByPrice=false
+           
 
         },
         scrollRight(id){
@@ -252,6 +261,7 @@ export default {
                    }
            }
         },
+       
    
         }
     }

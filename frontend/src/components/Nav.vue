@@ -6,8 +6,8 @@
        <div id="right" class="nav-right">
           <span v-if="isLoggedIn" class="nav-line-0" @click.prevent="watchlist">My watchlist</span>
           <span v-if="isLoggedIn" class="nav-line-1" @click="account">My account</span>
-          <span v-if="!isLoggedIn" class="nav-line-2" @click="signIn">Sign in</span>
-          <span v-else class="nav-line-2" @click="signOut">Sign out</span>
+          <span v-if="isLoggedIn" class="nav-line-2" @click="signOut">Sign out</span>
+          <span v-else class="nav-line-2" @click="signIn">Sign In</span>
        </div>
       </div>   
     </div> 
@@ -29,6 +29,18 @@ export default {
     isLoggedIn(){
       return this.logged
     },
+
+    getCookie() {
+      if (document.cookie === "login=false"){
+        return false
+      }
+      else if (document.cookie == ""){
+        return false
+      }
+      else{
+        return true
+      }
+},
     getUser(){
       return this.user
     },
@@ -41,9 +53,17 @@ export default {
     },
 
     signOut(){
-      this.$store.dispatch('signOut');
-      this.$router.push('/')
-      window.alert("Signed out successfully!")
+        axios({ method: "POST", url: "https://localhost:8000/users/logout", headers: {"content-type": "application/json"}})
+            .then((response) => {
+                 window.alert(response.data.message)
+                 this.$store.dispatch('signOut');
+                 this.$router.push('/sign-in')
+            })
+            .catch((error) => {
+                  window.alert(error.response.data.error);
+            })
+             
+          
     },
 
     goHome(){
@@ -51,7 +71,7 @@ export default {
     },
 
     watchlist(){
-      axios({ method: "GET", url: "https://localhost:8000/users/watchlist/"+ this.getUser.user_id, headers: {"content-type": "application/json", "token": this.getUser.token}})
+      axios({ method: "GET", url: "https://localhost:8000/users/watchlist/"+ this.getUser.user_id, headers: {"content-type": "application/json"}})
             .then((response) => {
                 const json = response.data;
                 this.$store.dispatch('setWatchlist',json);

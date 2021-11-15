@@ -84,6 +84,7 @@ export default {
                      window.alert("Welcome to Octopus, " + response.data.name + "!")
                      this.$store.dispatch('signIn',response.data);
                      this.$router.push({name:'home'})
+                     this.$forceUpdate();
                   
                   })
                .catch((error) => {
