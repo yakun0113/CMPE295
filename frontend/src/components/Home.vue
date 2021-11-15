@@ -90,10 +90,10 @@ export default {
                 return
             }
             
-            /*if (this.isLoggedIn === false){
+            if (this.isLoggedIn === false){
                 window.alert("Sign in to search!")
                 return
-            }*/
+            }
             this.showBar = true
             var intval = setInterval(()=>{
                     if(this.percentage < 100)
