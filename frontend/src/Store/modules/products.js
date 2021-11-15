@@ -13,6 +13,12 @@ const state = {
 		'target':{},
 		"walgreens":{}
 	},
+
+	storeLinks:{
+		"walmart":"",
+		'target':"",
+		"walgreens":"",
+	},
 }
 
 const mutations = {
@@ -25,6 +31,10 @@ const mutations = {
 		state.storeLocations['walmart'] = products.find(function(o){ return o.store=="Walmart"}).location;
 		state.storeLocations['target'] = products.find(function(o){ return o.store=="Target"}).location;
 		state.storeLocations['walgreens'] = products.find(function(o){ return o.store=="Walgreens"}).location;
+
+		state.storeLinks['walmart'] = products.find(function(o){ return o.store=="Walmart"}).website;
+		state.storeLinks['target'] = products.find(function(o){ return o.store=="Target"}).website;
+		state.storeLinks['walgreens'] = products.find(function(o){ return o.store=="Walgreens"}).website;
 	},
 }
 
@@ -47,6 +57,10 @@ const getters = {
 
 	store_locations: (state) => {
 		return state.storeLocations;
+	},
+
+	store_links: (state) =>{
+		return state.storeLinks;
 	},
 
 	walmart_sort_by_price: () => {
