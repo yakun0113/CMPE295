@@ -15,8 +15,12 @@ func AddItem() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var item models.WatchlistItem
 		var dbUser models.User
-		//user_id := c.Param("user_id")
-		user_id := c.MustGet("uid")
+		user_id := c.Param("user_id")
+		token_user_id := c.MustGet("uid")
+		if token_user_id != user_id {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Cannot access this resource"})
+
+		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
@@ -58,10 +62,13 @@ func DeleteItem() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var dbUser models.User
 
-		//user_id := c.Param("user_id")
-		user_id := c.MustGet("uid")
+		user_id := c.Param("user_id")
+		token_user_id := c.MustGet("uid")
+		if token_user_id != user_id {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Cannot access this resource"})
 
-		item_id := c.Param("item_id")
+		}
+		item_id := c.Param("item_id")[1:]
 
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
@@ -88,8 +95,12 @@ func DeleteItem() gin.HandlerFunc {
 func GetWatchlist() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var dbUser models.User
-		//user_id := c.Param("user_id")
-		user_id := c.MustGet("uid")
+		user_id := c.Param("user_id")
+		token_user_id := c.MustGet("uid")
+		if token_user_id != user_id {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Cannot access this resource"})
+
+		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()

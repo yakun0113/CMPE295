@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"octopus/helpers"
@@ -137,12 +136,16 @@ func Logout() gin.HandlerFunc {
 func GetUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user_id := c.Param("user_id")
-		//user_id := c.MustGet("uid")
+		token_user_id := c.MustGet("uid")
+		if token_user_id != user_id {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Cannot access this resource"})
 
-		if err := helpers.MatchUserTypeToUid(c, user_id); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
 		}
+		/*
+			if err := helpers.MatchUserTypeToUid(c, user_id); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}*/
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 
 		var user models.User
@@ -160,8 +163,12 @@ func DeleteUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
-		//user_id := c.Param("user_id")
-		user_id := c.MustGet("uid")
+		user_id := c.Param("user_id")
+		token_user_id := c.MustGet("uid")
+		if token_user_id != user_id {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Cannot access this resource"})
+
+		}
 
 		result, err := userCollection.DeleteOne(ctx, bson.M{"user_id": user_id})
 		if err != nil {
@@ -178,8 +185,12 @@ func UpdateUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
-		//user_id := c.Param("user_id")
-		user_id := c.MustGet("uid")
+		user_id := c.Param("user_id")
+		token_user_id := c.MustGet("uid")
+		if token_user_id != user_id {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Cannot access this resource"})
+
+		}
 
 		var updateUser models.UpdateUser
 		var foundUser models.User
@@ -230,6 +241,7 @@ func UpdateUser() gin.HandlerFunc {
 	}
 }
 
+/*
 func GetUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if err := helpers.CheckUserType(c, "ADMIN"); err != nil {
@@ -273,3 +285,4 @@ func GetUsers() gin.HandlerFunc {
 		c.JSON(http.StatusOK, allusers[0])
 	}
 }
+*/

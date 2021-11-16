@@ -10,18 +10,16 @@ import (
 
 func UserRoutes(incomingRoutes *gin.Engine) {
 	incomingRoutes.Use(middleware.Authenticate())
-	// The following two routes is only for admin
-	incomingRoutes.GET("/users", controllers.GetUsers())
+	//incomingRoutes.GET("/users", controllers.GetUsers())
 	incomingRoutes.GET("/users/:user_id", controllers.GetUser())
-
-	incomingRoutes.PUT("/users", controllers.UpdateUser())
-	incomingRoutes.DELETE("/users", controllers.DeleteUser())
+	incomingRoutes.PUT("/users/:user_id", controllers.UpdateUser())
+	incomingRoutes.DELETE("/users/:user_id", controllers.DeleteUser())
 
 	incomingRoutes.POST("users/logout", controllers.Logout())
 	incomingRoutes.POST("/search", controllers.Search())
 
-	incomingRoutes.GET("/users/watchlist", controllers.GetWatchlist())
-	incomingRoutes.POST("/users/watchlist", controllers.AddItem())
-	incomingRoutes.DELETE("/users/watchlist/:item_id", controllers.DeleteItem())
+	incomingRoutes.GET("/users/watchlist/:user_id", controllers.GetWatchlist())
+	incomingRoutes.POST("/users/watchlist/:user_id", controllers.AddItem())
+	incomingRoutes.DELETE("/users/watchlist/:user_id/*item_id", controllers.DeleteItem())
 
 }
