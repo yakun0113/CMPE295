@@ -47,7 +47,7 @@ export default {
                "rating": this.item.rating,
                "link": this.item.link,
            }
-           axios({ method: "POST", url: "https://localhost:8000/users/watchlist", data: data, headers: {"content-type": "application/json"} })
+           axios({ method: "POST", url: "https://localhost:8000/users/watchlist/" + this.getUser.user_id, data: data, headers: {"content-type": "application/json"} })
             .then((response) => {
                 this.$toast.show(response.data.message);
                 setTimeout(this.$toast.clear,2000)
@@ -57,7 +57,7 @@ export default {
             })
       },
       removeFromWatchlist(item){
-           axios({ method: "DELETE", url: "https://localhost:8000/users/watchlist/" + item.item_id, headers: {"content-type": "application/json"} })
+           axios({ method: "DELETE", url: "https://localhost:8000/users/watchlist/" + this.getUser.user_id + "/" + item.item_id, headers: {"content-type": "application/json"} })
             .then((response) => {
                 const json = response.data.result;
                 this.$store.dispatch('setWatchlist',json);

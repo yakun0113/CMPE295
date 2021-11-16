@@ -71,7 +71,7 @@ export default {
     },
 
     watchlist(){
-      axios({ method: "GET", url: "https://localhost:8000/users/watchlist", headers: {"content-type": "application/json"}})
+      axios({ method: "GET", url: "https://localhost:8000/users/watchlist/" + this.getUser.user_id, headers: {"content-type": "application/json"}})
             .then((response) => {
                 const json = response.data;
                 this.$store.dispatch('setWatchlist',json);
@@ -84,7 +84,15 @@ export default {
     },
 
     account(){
-      this.$router.push('/account')
+       axios({ method: "GET", url: "https://localhost:8000/users/" + this.getUser.user_id, headers: {"content-type": "application/json"}})
+            .then((response) => {
+                this.$store.dispatch('signIn',response.data);
+                this.$router.push('/account')
+
+            })
+            .catch((error) => {
+                  window.alert(error.response.data.error);
+            })
       }
   }
 }

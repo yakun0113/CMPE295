@@ -79,7 +79,7 @@ export default {
           "newPassword": this.newPassword
           }
       }
-        axios({ method: "PUT", url: "https://localhost:8000/users", data: this.userData, headers: {"content-type": "application/json", "token":this.getUser.token } })
+        axios({ method: "PUT", url: "https://localhost:8000/users/" + this.getUser.user_id, data: this.userData, headers: {"content-type": "application/json", "token":this.getUser.token } })
             .then((response)=> {
               window.alert(response.data.message)                  
                   })
@@ -91,7 +91,7 @@ export default {
 
     deleteAccount(){
        if(confirm("Do you really want to delete?")){
-           axios({ method: "DELETE", url: "https://localhost:8000/users", headers: {"content-type": "application/json", "token":this.getUser.token } })
+           axios({ method: "DELETE", url: "https://localhost:8000/users/" + this.getUser.user_id, headers: {"content-type": "application/json", "token":this.getUser.token } })
             .then((response)=> {
               window.alert(response.data.message)     
               this.$store.dispatch('signOut');
