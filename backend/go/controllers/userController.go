@@ -137,10 +137,8 @@ func Logout() gin.HandlerFunc {
 func GetUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user_id := c.Param("user_id")
-		token_user_id := c.MustGet("uid")
-		if user_id != token_user_id {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Hacker detected!"})
-		}
+		//user_id := c.MustGet("uid")
+
 		if err := helpers.MatchUserTypeToUid(c, user_id); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -162,11 +160,9 @@ func DeleteUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
-		user_id := c.Param("user_id")
-		token_user_id := c.MustGet("uid")
-		if user_id != token_user_id {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Hacker detected!"})
-		}
+		//user_id := c.Param("user_id")
+		user_id := c.MustGet("uid")
+
 		result, err := userCollection.DeleteOne(ctx, bson.M{"user_id": user_id})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -182,11 +178,9 @@ func UpdateUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
-		user_id := c.Param("user_id")
-		token_user_id := c.MustGet("uid")
-		if user_id != token_user_id {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Hacker detected!"})
-		}
+		//user_id := c.Param("user_id")
+		user_id := c.MustGet("uid")
+
 		var updateUser models.UpdateUser
 		var foundUser models.User
 		if err := c.BindJSON(&updateUser); err != nil {

@@ -15,11 +15,9 @@ func AddItem() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var item models.WatchlistItem
 		var dbUser models.User
-		user_id := c.Param("user_id")
-		token_user_id := c.MustGet("uid")
-		if user_id != token_user_id {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Hacker detected!"})
-		}
+		//user_id := c.Param("user_id")
+		user_id := c.MustGet("uid")
+
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
 		if err := userCollection.FindOne(ctx, bson.M{"user_id": user_id}).Decode(&dbUser); err != nil {
@@ -60,12 +58,10 @@ func DeleteItem() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var dbUser models.User
 
-		user_id := c.Param("user_id")
-		token_user_id := c.MustGet("uid")
-		if user_id != token_user_id {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Hacker detected!"})
-		}
-		item_id := c.Param("item_id")[1:]
+		//user_id := c.Param("user_id")
+		user_id := c.MustGet("uid")
+
+		item_id := c.Param("item_id")
 
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
@@ -92,11 +88,9 @@ func DeleteItem() gin.HandlerFunc {
 func GetWatchlist() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var dbUser models.User
-		user_id := c.Param("user_id")
-		token_user_id := c.MustGet("uid")
-		if user_id != token_user_id {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Hacker detected!"})
-		}
+		//user_id := c.Param("user_id")
+		user_id := c.MustGet("uid")
+
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
 		err := userCollection.FindOne(ctx, bson.M{"user_id": user_id}).Decode(&dbUser)
