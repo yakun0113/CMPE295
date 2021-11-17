@@ -118,16 +118,16 @@ func Login() gin.HandlerFunc {
 			return
 		}
 
-		c.SetCookie("token", token, 3600, "/", "localhost", false, true)
-		c.SetCookie("login", "true", 3600, "/", "localhost", false, false)
+		c.SetCookie("token", token, 900, "/", "localhost", false, true)
+		c.SetCookie("user_id", foundUser.User_id, 900, "/", "localhost", false, false)
 		c.JSON(http.StatusOK, foundUser)
 	}
 }
 
 func Logout() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.SetCookie("token", "", 3600, "/", "localhost", false, true)
-		c.SetCookie("login", "false", 3600, "/", "localhost", false, false)
+		c.SetCookie("token", "0", 1, "/", "localhost", false, true)
+		c.SetCookie("user_id", "0", 1, "/", "localhost", false, false)
 
 		c.JSON(http.StatusOK, gin.H{"message": "Signed out successfully!"})
 	}
