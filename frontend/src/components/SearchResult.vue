@@ -27,7 +27,9 @@
    
     <h1 class="wmr">
         <img src='../assets/walmart.jpg' width="50" height="50" class="image"/>Walmart</h1>    
-    <h3 v-if="walmartLength === 0">No results for Walmart</h3>
+    <h3 v-if="storeLinks['walmart']==''">Cannot get store</h3>
+    <h3 v-else-if="walmartLength === 0">Cannot get result, please visit the link in the map</h3>
+
     <div class = "parent">
         <div v-if="isSortByPrice" class="test-cards-container">
             <ProductItem 
@@ -62,7 +64,8 @@
 
 
     <h1 class="tgt"><img src='../assets/target.jpg' width="50" height="50" class="image"/>Target</h1>   
-    <h3 v-if="targetLength === 0">No results for Target</h3>
+    <h3 v-if="storeLinks['target']==''">Cannot get store</h3>
+    <h3 v-else-if="targetLength === 0">Cannot get result, please visit the link in the map</h3>
     <div class = "parent">
         <div v-if="isSortByPrice" class="test-cards-container">
             <ProductItem 
@@ -96,6 +99,8 @@
     <unicon class="angle-right-b" @click.stop = "scrollRight('tright')" v-if="target_index + 6 <= targetLength+1" name="angle-double-right" height="40px" width="40px" fill="black" hover-fill="limegreen"></unicon>
 
     <h1 class="wgr"><img src='../assets/walgreens.jpg' width="50" height="50" class="image"/>Walgreens</h1>
+    <h3 v-if="storeLinks['walgreens']==''">Cannot get store</h3>
+    <h3 v-else-if="walgreensLength === 0">Cannot get result, please visit the link in the map</h3>
     <div class = "parent">    
         <div v-if="isSortByPrice" class="test-cards-container">
             <ProductItem 
