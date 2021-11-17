@@ -30,24 +30,23 @@ export default {
       return this.logged
     },
 
-    getCookie() {
-      if (document.cookie === "login=false"){
+    getCookie(){
+      if (document.cookie.indexOf('user_id') === -1){
         return false
-      }
-      else if (document.cookie == ""){
-        return false
-      }
+      }      
       else{
         return true
       }
-},
-    getUser(){
-      return this.user
+     
     },
+    
+    //getUser(){
+     // return this.user
+    //},
   },
   methods: {
     ...mapActions(['signOut','setWatchlist']),
-
+  
     signIn(){
       this.$router.push('/sign-in')
     },
@@ -68,10 +67,12 @@ export default {
 
     goHome(){
       this.$router.push('/')
+      console.log(document.cookie)
     },
 
     watchlist(){
-      axios({ method: "GET", url: "https://localhost:8000/users/watchlist/" + this.getUser.user_id, headers: {"content-type": "application/json"}})
+      const user_id = document.cookie.split('=')[1]
+      axios({ method: "GET", url: "https://localhost:8000/users/watchlist/" + user_id, headers: {"content-type": "application/json"}})
             .then((response) => {
                 const json = response.data;
                 this.$store.dispatch('setWatchlist',json);
@@ -84,7 +85,9 @@ export default {
     },
 
     account(){
-       axios({ method: "GET", url: "https://localhost:8000/users/" + this.getUser.user_id, headers: {"content-type": "application/json"}})
+       const user_id = document.cookie.split('=')[1]
+
+       axios({ method: "GET", url: "https://localhost:8000/users/" + user_id, headers: {"content-type": "application/json"}})
             .then((response) => {
                 this.$store.dispatch('signIn',response.data);
                 this.$router.push('/account')

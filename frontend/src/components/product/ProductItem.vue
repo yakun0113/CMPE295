@@ -5,8 +5,8 @@
       <h5 class="price">{{item.price}}</h5>
       <p class="description">{{item.rating}}</p>
       <a :href="item.link" @click.prevent="visitProductPage(item.link)">Learn More</a>
-  <div><button v-if="isLoggedIn && (button==='Add')" class="add" @click.prevent="addToWatchlist">Add to watchlist</button></div>
-  <div><button v-if="isLoggedIn && (button==='Delete')" class="delete" @click.prevent="removeFromWatchlist(item)">Remove from watchlist</button></div>
+  <div><button v-if="button==='Add'" class="add" @click.prevent="addToWatchlist">Add to watchlist</button></div>
+  <div><button v-if="button==='Delete'" class="delete" @click.prevent="removeFromWatchlist(item)">Remove from watchlist</button></div>
   </div>
 </template>
 
@@ -15,24 +15,19 @@ import axios from 'axios';
 import { mapGetters } from 'vuex'
 export default {
     props: [ 'item', 'button' ],
-    data(){
-        return{
-            //image: this.item.image,
-            //link: this.item.link,
-        }
-    },
+  
   computed: {
      ...mapGetters(['user','logged','watchlist']),
      
      watchList() {
             return this.watchlist.slice(this.watchlist_index, this.watchlist_index + 6)
         },
-    getUser(){
-        return this.user    
-    },
-    isLoggedIn(){
-      return this.logged
-    }
+    //getUser(){
+      //  return this.user    
+    //},
+    //isLoggedIn(){
+    //  return this.logged
+    //}
       
   },
   methods: {
@@ -47,7 +42,9 @@ export default {
                "rating": this.item.rating,
                "link": this.item.link,
            }
-           axios({ method: "POST", url: "https://localhost:8000/users/watchlist/" + this.getUser.user_id, data: data, headers: {"content-type": "application/json"} })
+           const user_id = document.cookie.split('=')[1]
+
+           axios({ method: "POST", url: "https://localhost:8000/users/watchlist/" + user_id, data: data, headers: {"content-type": "application/json"} })
             .then((response) => {
                 this.$toast.show(response.data.message);
                 setTimeout(this.$toast.clear,2000)
@@ -57,7 +54,9 @@ export default {
             })
       },
       removeFromWatchlist(item){
-           axios({ method: "DELETE", url: "https://localhost:8000/users/watchlist/" + this.getUser.user_id + "/" + item.item_id, headers: {"content-type": "application/json"} })
+           const user_id = document.cookie.split('=')[1]
+
+           axios({ method: "DELETE", url: "https://localhost:8000/users/watchlist/" + user_id + "/" + item.item_id, headers: {"content-type": "application/json"} })
             .then((response) => {
                 const json = response.data.result;
                 this.$store.dispatch('setWatchlist',json);
