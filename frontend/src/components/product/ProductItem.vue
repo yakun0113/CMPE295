@@ -4,7 +4,7 @@
       <img class="image" :src="item.image" />
       <h5 class="price">{{item.price}}</h5>
       <p class="description">{{item.rating}}</p>
-      <a :href="item.link">Learn More</a>
+      <a :href="item.link" @click.prevent="visitProductPage(item.link)">Learn More</a>
   <div><button v-if="isLoggedIn && (button==='Add')" class="add" @click.prevent="addToWatchlist">Add to watchlist</button></div>
   <div><button v-if="isLoggedIn && (button==='Delete')" class="delete" @click.prevent="removeFromWatchlist(item)">Remove from watchlist</button></div>
   </div>
@@ -67,7 +67,10 @@ export default {
             .catch((error) => {
                   window.alert(error.response.data.error);
             })
-  }
+  },
+    visitProductPage(link){
+        window.open(link)
+    }
 }
 }
 </script>
