@@ -36,20 +36,30 @@ def get_walmart(product_name, option, latitude, longitude, product_list):
             time.sleep(0.1)
         walmart_soup = BeautifulSoup(driver.page_source, 'html.parser')
         driver.quit()
-        scrape_walmart(walmart_soup, Walmart_location, Walmart_url, product_list)
 
+        try:
+            scrape_walmart(walmart_soup, Walmart_location, Walmart_url, product_list)
+        
+        except:
+              store = {
+                "store": "Walmart",
+                "location": Walmart_location,
+                "products": []
+    }
+              product_list.append(store)
 
     except:
         store = {
         "store": "Walmart",
         "location": {
-            "latitude":None,
-            "longitude":None
-        },
+            "latitude": None,
+            "longitude": None
+            },
         "products": []
     }
-
         product_list.append(store)
+
+
 def get_target(product_name, option, latitude, longitude, product_list):
     try:
         Target = requests.get("https://serpapi.com/search.json?engine=google_maps&q=target&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + SERPAPI_KEY)
@@ -82,15 +92,25 @@ def get_target(product_name, option, latitude, longitude, product_list):
             time.sleep(0.1)
         target_soup = BeautifulSoup(driver.page_source, 'html.parser')
         driver.quit()
-        scrape_target(target_soup, Target_location, Target_url, product_list)
+        try:
+            scrape_target(target_soup, Target_location, Target_url, product_list)
+        
+        except:
+            store = {
+                "store": "Target",
+                "location": Target_location,
+                "products": []
+    }
+            product_list.append(store)
 
     except:
         store = {
         "store": "Target",
         "location": {
-            "latitude":None,
-            "longitude":None
-        },
+            "latitude": None,
+            "longitude": None
+            },
+
         "products": []
     }
 
@@ -121,15 +141,23 @@ def get_walgreens(product_name, option, latitude, longitude, product_list):
 
         walgreens_soup = BeautifulSoup(driver.page_source, 'html.parser')
         driver.quit()
-        scrape_walgreens(walgreens_soup, Walgreens_location, Walgreens_url, product_list)
-
+        try:
+            scrape_walgreens(walgreens_soup, Walgreens_location, Walgreens_url, product_list)
+        
+        except:
+            store = {
+                "store": "Walgreens",
+                "location": Walgreens_location,
+                "products": []
+    }
+            product_list.append(store)
     except:
         store = {
         "store": "Walgreens",
         "location": {
-            "latitude":None,
-            "longitude":None
-        },
+            "latitude": None,
+            "longitude": None
+            },
         "products": []
     }
 

@@ -23,7 +23,9 @@ class S(BaseHTTPRequestHandler):
         latitude = post_data["latitude"]
         longitude = post_data["longitude"]
         product_data = scrape(product_name, latitude, longitude)
-        #product_data = scrape(product_name, "37.3382", "-121.8863")
+        #product_data = scrape(product_name, "37.391645360829024", "-121.87655197677155")
+        #product_data = scrape(product_name, "37.0902", "-95.7129")
+
         #file = open("products.json",'r')
         #product_data = file.read()
         self._set_response()
