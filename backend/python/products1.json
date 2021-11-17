@@ -2,8 +2,10 @@
     {
         "store": "Walmart",
         "location": {
-    
+            "latitude": "",
+            "longitude": ""
         },
+        
         "products": [
            
         ]

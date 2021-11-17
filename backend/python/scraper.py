@@ -36,7 +36,7 @@ def get_walmart(product_name, option, latitude, longitude, product_list):
             time.sleep(0.1)
         walmart_soup = BeautifulSoup(driver.page_source, 'html.parser')
         driver.quit()
-        scrape_walmart(walmart_soup, Walmart_location, product_list)
+        scrape_walmart(walmart_soup, Walmart_location, Walmart_url, product_list)
 
 
     except:
@@ -75,7 +75,7 @@ def get_target(product_name, option, latitude, longitude, product_list):
             time.sleep(0.1)
         target_soup = BeautifulSoup(driver.page_source, 'html.parser')
         driver.quit()
-        scrape_target(target_soup, Target_location, product_list)
+        scrape_target(target_soup, Target_location, Target_url, product_list)
 
     except:
         store = {
@@ -114,7 +114,7 @@ def get_walgreens(product_name, option, latitude, longitude, product_list):
 
         walgreens_soup = BeautifulSoup(driver.page_source, 'html.parser')
         driver.quit()
-        scrape_walgreens(walgreens_soup, Walgreens_location, product_list)
+        scrape_walgreens(walgreens_soup, Walgreens_location, Walgreens_url, product_list)
 
     except:
         store = {
@@ -128,7 +128,7 @@ def get_walgreens(product_name, option, latitude, longitude, product_list):
 
         product_list.append(store)
 
-def scrape_walmart(soup, Walmart_location, product_list):
+def scrape_walmart(soup, Walmart_location, Walmart_url, product_list):
 
     p_list = []
     productId = 0
@@ -182,12 +182,13 @@ def scrape_walmart(soup, Walmart_location, product_list):
     store = {
         "store": "Walmart",
         "location": Walmart_location,
+        "website": Walmart_url,
         "products": p_list
     }
 
     product_list.append(store)
     
-def scrape_target(soup, Target_location, product_list):
+def scrape_target(soup, Target_location, Target_url, product_list):
 
     p_list = []
     productId = 100
@@ -231,12 +232,13 @@ def scrape_target(soup, Target_location, product_list):
     store = {
         "store": "Target",
         "location": Target_location,
+        "website": Target_url,
         "products": p_list
     }
 
     product_list.append(store)
 
-def scrape_walgreens(soup, Walgreens_location, product_list):
+def scrape_walgreens(soup, Walgreens_location, Walgreens_url, product_list):
 
     p_list = []
     productId = 200
@@ -276,7 +278,7 @@ def scrape_walgreens(soup, Walgreens_location, product_list):
 
         p_list.append(product)    
         productId += 1
-        
+        '''
         if productStatus is not None :
             product = {
                 "id": productId,
@@ -292,10 +294,11 @@ def scrape_walgreens(soup, Walgreens_location, product_list):
 
         else: 
             continue
-    
+    '''
     store = {
         "store": "Walgreens",
         "location": Walgreens_location,
+        "website": Walgreens_url,
         "products": p_list
     }
 
