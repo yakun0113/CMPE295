@@ -26,9 +26,9 @@ def get_walmart(product_name, option, latitude, longitude, product_list):
         driver = webdriver.Chrome(executable_path="./chromedriver", options = option)
         driver.get(Walmart_url)
         try:
-            button = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content"]/div[2]/section[2]/div[2]/div/div[1]/div/div/div/div[2]/form/div/div[3]/button')))
+            button = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content"]/div[2]/section[2]/div[2]/div/div[1]/div/div/div/div[2]/form/div/div[3]/button')))
         except:
-            button = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content"]/div[2]/section[2]/div[2]/div/div/div/div/div/div[2]/form/div/div[3]/button')))
+            button = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content"]/div[2]/section[2]/div[2]/div/div/div/div/div/div[2]/form/div/div[3]/button')))
         button.click()
         WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content"]/div[2]/section[2]/div[2]/div/div[2]')))
         for i in range(10):
@@ -50,7 +50,6 @@ def get_walmart(product_name, option, latitude, longitude, product_list):
     }
 
         product_list.append(store)
-
 def get_target(product_name, option, latitude, longitude, product_list):
     try:
         Target = requests.get("https://serpapi.com/search.json?engine=google_maps&q=target&ll=%40"+latitude+"%2C"+longitude+"%2C15z&type=search&api_key=" + SERPAPI_KEY)
@@ -63,10 +62,18 @@ def get_target(product_name, option, latitude, longitude, product_list):
         driver = webdriver.Chrome(executable_path="./chromedriver", options = option)
         driver.get(Target_url)
         driver.execute_script("window.scrollBy(0, document.body.scrollHeight/5)")
+        '''
         try:
-            button = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div[4]/div[1]/div[1]/div[2]/div/div[5]/button[2]')))
-        except:
             button = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div[5]/div[1]/div[1]/div[2]/div/div[5]/button[2]')))
+        except:
+            button = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div[4]/div[1]/div[1]/div[2]/div/div[5]/button[2]')))
+        '''
+        for i in range(3,6):
+            try:
+                button = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div['+str(i)+']/div[1]/div[1]/div[2]/div/div[5]/button[2]')))
+                break
+            except:
+                continue
         button.click()
         product_name = product_name.replace(" ","+")
         driver.get("https://www.target.com/s?searchTerm="+product_name+"&facetedValue=5zkty")
@@ -100,13 +107,13 @@ def get_walgreens(product_name, option, latitude, longitude, product_list):
         driver.get(Walgreens_url) 
         driver.execute_script("window.scrollBy(0, document.body.scrollHeight/5)")
 
-        search = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="shop-placeholder"]')))
+        search = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="shop-placeholder"]')))
         search.send_keys(product_name)
-        button = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="storeServiceDiv"]/div[1]/div[1]/div[3]/div/div/button')))
+        button = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="storeServiceDiv"]/div[1]/div[1]/div[3]/div/div/button')))
         button.click()
-        inStore = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="IN_STORES"]')))
+        inStore = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="IN_STORES"]')))
         inStore.click()
-        WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="wag-cursor-pointer_sub_category-Pickup"]/div/label/span[2]/span')))
+        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="wag-cursor-pointer_sub_category-Pickup"]/div/label/span[2]/span')))
         
         for i in range(15):
             driver.execute_script("window.scrollBy(0, document.body.scrollHeight/15)")
@@ -192,11 +199,11 @@ def scrape_target(soup, Target_location, Target_url, product_list):
 
     p_list = []
     productId = 100
-    productInfo = soup.select('ul[class="Row-uds8za-0 jBYETz h-padding-t-tight"] li[class="Col-favj32-0 iXmsJV h-padding-a-none h-display-flex"]')
+    productInfo = soup.select('ul[class="Row-sc-uds8za-0 dBcBfm h-padding-t-tight"] li[class="Col-sc-favj32-0 epICLY h-padding-a-none h-display-flex"]')
     
     for result in productInfo:
         productImage = result.select_one('img')   
-        productNameLink = result.select_one('a[class="Link__StyledLink-sc-4b9qcv-0 styles__StyledTitleLink-h3r0um-1 iBIqkb rwewC h-display-block h-text-bold h-text-bs"]')
+        productNameLink = result.select_one('a[class="Link__StyledLink-sc-4b9qcv-0 styles__StyledTitleLink-sc-h3r0um-1 iBIqkb eQFZgH h-display-block h-text-bold h-text-bs"]')
         productName = productNameLink.text
         productPrice = result.select_one('div[data-test="current-price"]').span
         productRating = result.select_one('span[class="utils__ScreenReaderOnly-sc-1p6kq06-0 iyDnVM"]')
