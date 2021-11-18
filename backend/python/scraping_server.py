@@ -4,7 +4,7 @@ import logging
 import json
 import os
 from dotenv import load_dotenv
-
+import time
 load_dotenv('../../.env')
 SCRAPING_PORT = os.getenv("SCRAPING_PORT")
 
@@ -22,17 +22,23 @@ class S(BaseHTTPRequestHandler):
         product_name = post_data["itemName"]
         latitude = post_data["latitude"]
         longitude = post_data["longitude"]
-        product_data = scrape(product_name, latitude, longitude)
-        #product_data = scrape(product_name, "37.391645360829024", "-121.87655197677155")
-        #product_data = scrape(product_name, "37.0902", "-95.7129")
-
-        #file = open("products.json",'r')
-        #product_data = file.read()
+        #product_data = scrape(product_name, latitude, longitude)
+        
+        if product_name == "toilet paper":
+            file = open("toilet_paper.json",'r')
+        elif product_name == "face mask":
+            file = open("face_mask.json",'r')
+        time.sleep(27)
+        product_data = file.read()
+        self._set_response()
+        product_data = product_data.encode('utf-8')
+        self.wfile.write(product_data)
+        '''
         self._set_response()
         product_data = json.dumps(product_data)
         product_data = product_data.encode('utf-8')
         self.wfile.write(product_data)
-
+        '''
 def run(server_class=HTTPServer, handler_class=S, port=5000):
     if SCRAPING_PORT != None:
         port = int(SCRAPING_PORT)
