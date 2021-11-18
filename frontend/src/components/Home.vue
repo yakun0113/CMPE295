@@ -101,7 +101,7 @@ export default {
                        
                     else
                         clearInterval(intval);
-                },30);
+                },25);
 
             var data = {
                "itemName": this.itemName,
