@@ -22,23 +22,12 @@ class S(BaseHTTPRequestHandler):
         product_name = post_data["itemName"]
         latitude = post_data["latitude"]
         longitude = post_data["longitude"]
-        #product_data = scrape(product_name, latitude, longitude)
-        
-        if product_name == "toilet paper":
-            file = open("toilet_paper.json",'r')
-        elif product_name == "face mask":
-            file = open("face_mask.json",'r')
-        time.sleep(27)
-        product_data = file.read()
-        self._set_response()
-        product_data = product_data.encode('utf-8')
-        self.wfile.write(product_data)
-        '''
+        product_data = scrape(product_name, latitude, longitude)
         self._set_response()
         product_data = json.dumps(product_data)
         product_data = product_data.encode('utf-8')
         self.wfile.write(product_data)
-        '''
+        
 def run(server_class=HTTPServer, handler_class=S, port=5000):
     if SCRAPING_PORT != None:
         port = int(SCRAPING_PORT)
