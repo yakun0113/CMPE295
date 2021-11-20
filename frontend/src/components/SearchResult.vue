@@ -37,7 +37,6 @@
                 v-bind:href="item.name"
                 :key="item.id"
                 :item="item" 
-                :button="button"
             />
         </div>
         <div v-else-if="isSortByRating" class="test-cards-container">
@@ -46,7 +45,6 @@
                 v-bind:href="item.name"
                 :key="item.id"
                 :item="item" 
-                :button="button"
             />
         </div>
         <div v-else class="test-cards-container">
@@ -55,7 +53,6 @@
                 v-bind:href="item.name"
                 :key="item.id"
                 :item="item" 
-                :button="button"
             />
         </div>
     </div>
@@ -73,7 +70,6 @@
                 v-bind:href="item.name"
                 :key="item.id"
                 :item="item"   
-                :button="button" 
            />
         </div>
         <div v-else-if="isSortByRating" class="test-cards-container">
@@ -82,7 +78,6 @@
                 v-bind:href="item.name"
                 :key="item.id"
                 :item="item"   
-                :button="button" 
            />
         </div>
         <div v-else class="test-cards-container">
@@ -91,7 +86,6 @@
                 v-bind:href="item.name"
                 :key="item.id"
                 :item="item"   
-                :button="button" 
            />
         </div>
     </div>
@@ -108,7 +102,6 @@
                 v-bind:href="item.name"
                 :key="item.id"
                 :item="item" 
-                :button="button"  
             />
         </div>
         <div v-else-if="isSortByRating" class="test-cards-container">
@@ -117,7 +110,6 @@
                 v-bind:href="item.name"
                 :key="item.id"
                 :item="item" 
-                :button="button"  
             />
         </div>
         <div v-else class="test-cards-container">
@@ -126,7 +118,6 @@
                 v-bind:href="item.name"
                 :key="item.id"
                 :item="item" 
-                :button="button"  
             />
         </div>
     </div>
@@ -153,7 +144,7 @@ export default {
         isSortByRating: false,
         }
     },
-    props:['productName','latitude', 'longitude','button'],
+    props:['productName','latitude', 'longitude',],
     components: {
         ProductItem,
         GoogleMaps,

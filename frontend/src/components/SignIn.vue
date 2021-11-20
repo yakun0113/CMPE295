@@ -79,7 +79,7 @@ export default {
                 "email": this.emailLogin,
                 "password": this.passwordLogin,
             }
-            axios({ method: "POST", url: "https://localhost:8000/users/login", data: userData, headers: {"content-type": "application/json" } })
+            axios({ method: "POST", url: "https://localhost:8000/login", data: userData, headers: {"content-type": "application/json" } })
             .then((response)=> {
                      window.alert("Welcome to Octopus, " + response.data.name + "!")
                      this.$store.dispatch('signIn',response.data);
@@ -109,7 +109,7 @@ export default {
                 "password": this.passwordReg,
                 "watchlist": [],
             }
-            axios({ method: "POST", url: "https://localhost:8000/users/signup", data: userData, headers: {"content-type": "application/json" } })
+            axios({ method: "POST", url: "https://localhost:8000/signup", data: userData, headers: {"content-type": "application/json" } })
             .then((response)=> {
                   window.alert(response.data.message);
                   if (response.data.message === "Signed up successfully!"){

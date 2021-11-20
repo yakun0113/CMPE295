@@ -5,8 +5,10 @@
       <h5 class="price">{{item.price}}</h5>
       <p class="description">{{item.rating}}</p>
       <a :href="item.link" @click.prevent="visitProductPage(item.link)">Learn More</a>
-  <div><button v-if="button==='Add'" class="add" @click.prevent="addToWatchlist">Add to watchlist</button></div>
-  <div><button v-if="button==='Delete'" class="delete" @click.prevent="removeFromWatchlist(item)">Remove from watchlist</button></div>
+      <div>
+        <button v-if="button != 'Delete'" class="add" @click.prevent="addToWatchlist">Add to watchlist</button>
+        <button v-else class="delete" @click.prevent="removeFromWatchlist(item)">Remove from watchlist</button>
+      </div>
   </div>
 </template>
 
@@ -44,7 +46,7 @@ export default {
            }
            const user_id = document.cookie.split('=')[1]
 
-           axios({ method: "POST", url: "https://localhost:8000/users/watchlist/" + user_id, data: data, headers: {"content-type": "application/json"} })
+           axios({ method: "POST", url: "https://localhost:8000/watchlist/" + user_id, data: data, headers: {"content-type": "application/json"} })
             .then((response) => {
                 this.$toast.show(response.data.message);
                 setTimeout(this.$toast.clear,2000)
@@ -56,7 +58,7 @@ export default {
       removeFromWatchlist(item){
            const user_id = document.cookie.split('=')[1]
 
-           axios({ method: "DELETE", url: "https://localhost:8000/users/watchlist/" + user_id + "/" + item.item_id, headers: {"content-type": "application/json"} })
+           axios({ method: "DELETE", url: "https://localhost:8000/watchlist/" + user_id + "/" + item.item_id, headers: {"content-type": "application/json"} })
             .then((response) => {
                 const json = response.data.result;
                 this.$store.dispatch('setWatchlist',json);

@@ -52,7 +52,7 @@ export default {
     },
 
     signOut(){
-        axios({ method: "POST", url: "https://localhost:8000/users/logout", headers: {"content-type": "application/json"}})
+        axios({ method: "POST", url: "https://localhost:8000/logout", headers: {"content-type": "application/json"}})
             .then((response) => {
                  window.alert(response.data.message)
                  this.$store.dispatch('signOut');
@@ -72,7 +72,7 @@ export default {
 
     watchlist(){
       const user_id = document.cookie.split('=')[1]
-      axios({ method: "GET", url: "https://localhost:8000/users/watchlist/" + user_id, headers: {"content-type": "application/json"}})
+      axios({ method: "GET", url: "https://localhost:8000/watchlist/" + user_id, headers: {"content-type": "application/json"}})
             .then((response) => {
                 const json = response.data;
                 this.$store.dispatch('setWatchlist',json);

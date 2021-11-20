@@ -118,7 +118,7 @@ export default {
                                        productName: this.itemName,
                                        latitude: this.latitude,
                                        longitude: this.longitude,
-                                       button: 'Add'}});
+                                       }});
                
                 console.log(response.data)
             })
